@@ -1,0 +1,137 @@
+{
+  "id": "cmtru6yprkssyx",
+  "name": "Voyou Chasseur de Trésors",
+  "classLevel": "Voyou — Voie du Chasseur de Trésors",
+  "background": "Criminelle en voie de recherche",
+  "alignment": "",
+  "hp": {
+    "max": 8,
+    "current": 8,
+    "temp": 0
+  },
+  "ac": 14,
+  "speed": 30,
+  "initiative": 2,
+  "inspiration": false,
+  "deathSaves": {
+    "success": 0,
+    "failure": 0
+  },
+  "corruption": {
+    "temp": 0,
+    "perm": 0,
+    "current": 0,
+    "threshold": 6
+  },
+  "proficiencyBonus": 2,
+  "abilities": {
+    "str": {
+      "score": 10,
+      "save": false,
+      "skills": {
+        "athletics": false
+      }
+    },
+    "dex": {
+      "score": 15,
+      "save": true,
+      "skills": {
+        "acrobatics": false,
+        "sleightOfHand": false,
+        "stealth": false
+      }
+    },
+    "con": {
+      "score": 10,
+      "save": false,
+      "skills": {}
+    },
+    "int": {
+      "score": 13,
+      "save": false,
+      "skills": {
+        "arcana": false,
+        "history": false,
+        "investigation": false,
+        "nature": false,
+        "religion": false
+      }
+    },
+    "wis": {
+      "score": 13,
+      "save": false,
+      "skills": {
+        "animalHandling": false,
+        "insight": false,
+        "medicine": false,
+        "perception": false,
+        "survival": false
+      }
+    },
+    "cha": {
+      "score": 15,
+      "save": true,
+      "skills": {
+        "deception": false,
+        "intimidation": false,
+        "performance": false,
+        "persuasion": false
+      }
+    }
+  },
+  "weapons": [
+    {
+      "name": "🤛 Frappe à mains nues",
+      "toHit": "+2",
+      "damage": "1",
+      "damageBonus": ""
+    },
+    {
+      "name": "🗡️ Épées courtes (2)",
+      "toHit": "+4",
+      "damage": "1d6",
+      "damageBonus": "+2"
+    },
+    {
+      "name": "🔪 Dagues (2)",
+      "toHit": "+4",
+      "damage": "1d4",
+      "damageBonus": "+2"
+    },
+    {
+      "name": "🥷 Attaque dans le dos (bonus)",
+      "toHit": "",
+      "damage": "1d6",
+      "damageBonus": ""
+    }
+  ],
+  "equipment": "Armure de cuir clouté (12 + mod. Dex)\n2 dagues (1d4 perforant) (Finesse, Légère, Lancer 6/18 m)\n2 épées courtes (1d6 perforant) (Finesse, Légère)\nOutils de voleur\n\nUn sac à dos\nUn sac de couchage\nUn nécessaire de cuisine\nUn briquet à silex\n10 torches\n10 jours de rations\nUne outre\n15 mètres (50 pieds) de corde attachée sur le côté du sac",
+  "otherProficiencies": "Armures : armures légères.\nArmes : armes courantes, arbalètes légères, épées longues, rapières, épées courtes.\nOutils : outils de voleur.\nJets de sauvegarde : Dextérité, Charisme.\nCompétences : choisir trois parmi Acrobaties, Athlétisme, Tromperie, Perspicacité, Intimidation, Investigation, Perception, Représentation, Persuasion, Escamotage et Discrétion.\n\nHistorique — Criminelle en voie de recherche :\n- Compétence (au choix) : Intimidation, Athlétisme, Nature ou Survie\n- Outil : outils de voleur\n- Équipement : vêtements courants et 1d6 + 4 ortegs",
+  "features": [
+    {
+      "title": "🎯 Expertise",
+      "category": "Classe",
+      "body": "À partir du niveau 1, choisissez deux de vos maîtrises de compétence, ou une compétence et les outils de voleur. Votre bonus de maîtrise est doublé pour tout test utilisant l'un de ces choix.\n\nAu niveau 6, vous pouvez choisir deux compétences ou outils supplémentaires pour bénéficier du même avantage."
+    },
+    {
+      "title": "🥷 Attaque dans le dos (Backstab)",
+      "category": "Classe",
+      "body": "Au niveau 1, vous savez exploiter la distraction d'un ennemi. Une fois par tour, vous infligez 1d6 dégâts supplémentaires avec une arme de corps à corps si vous avez l'avantage (et maîtrisez l'arme), ou si un ennemi non neutralisé de la cible se trouve à 1,5 m (5 ft), sans désavantage de votre part.\n\nCes dégâts augmentent avec vos niveaux :\nLV 1-2 = 1d6, LV 3-4 = 2d6, LV 5-6 = 3d6, LV 7-8 = 4d6, LV 9-10 = 5d6, LV 11-12 = 6d6, LV 13-14 = 7d6, LV 15-16 = 8d6, LV 17-18 = 9d6, LV 19-20 = 10d6."
+    },
+    {
+      "title": "🏹 Lancer d'acier",
+      "category": "Sous-classe",
+      "body": "Dès le niveau 1, vous pouvez utiliser votre capacité Attaque dans le dos (Backstab) avec une arme de jet lors d'une attaque avec une arme à distance.\n\nAu niveau 13, vous devenez un expert des armes de jet : vous ne subissez plus de désavantage à longue portée avec ces armes et vous réussissez un coup critique sur un jet naturel de 19 ou 20."
+    },
+    {
+      "title": "🧭 Tacticien",
+      "category": "Sous-classe",
+      "body": "Au niveau 1, vous avez étudié de manière approfondie les combats à petite échelle. Vous avez l'avantage sur les jets d'initiative."
+    }
+  ],
+  "notes": "Reconstitué à partir des notes Obsidian d'origine (ch3 Battle Sheet, Ability Score, Feature Scoundrel, Feature Treasure Hunter, Équipement, Équipement Attaque et Défense, Proficiency).",
+  "isSpellcaster": false,
+  "spellcastingAbility": "int",
+  "spells": [],
+  "resources": []
+}

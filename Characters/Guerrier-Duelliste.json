@@ -1,0 +1,134 @@
+{
+  "id": "cmtnxcxoqjchld",
+  "name": "Guerrier Duelliste",
+  "classLevel": "Guerrier — Voie du Duelliste",
+  "background": "Mercenaire",
+  "alignment": "",
+  "hp": {
+    "max": 10,
+    "current": 10
+  },
+  "ac": 15,
+  "speed": 30,
+  "initiative": 3,
+  "corruption": {
+    "temp": 0,
+    "perm": 0,
+    "current": 0,
+    "threshold": 5
+  },
+  "proficiencyBonus": 2,
+  "abilities": {
+    "str": {
+      "score": 15,
+      "save": true,
+      "skills": {
+        "athletics": false
+      }
+    },
+    "dex": {
+      "score": 16,
+      "save": false,
+      "skills": {
+        "acrobatics": false,
+        "sleightOfHand": false,
+        "stealth": false
+      }
+    },
+    "con": {
+      "score": 14,
+      "save": true,
+      "skills": {}
+    },
+    "int": {
+      "score": 11,
+      "save": false,
+      "skills": {
+        "arcana": false,
+        "history": false,
+        "investigation": false,
+        "nature": false,
+        "religion": false
+      }
+    },
+    "wis": {
+      "score": 8,
+      "save": false,
+      "skills": {
+        "animalHandling": false,
+        "insight": false,
+        "medicine": false,
+        "perception": false,
+        "survival": false
+      }
+    },
+    "cha": {
+      "score": 12,
+      "save": false,
+      "skills": {
+        "deception": false,
+        "intimidation": false,
+        "performance": false,
+        "persuasion": false
+      }
+    }
+  },
+  "weapons": [
+    {
+      "name": "🤛 Frappe à mains nues",
+      "toHit": "+4",
+      "damage": "1",
+      "damageBonus": "+2"
+    },
+    {
+      "name": "🗡️ Épée courte",
+      "toHit": "+5",
+      "damage": "1d6",
+      "damageBonus": "+3"
+    },
+    {
+      "name": "🏹 Arc long (20 flèches)",
+      "toHit": "+5",
+      "damage": "1d8",
+      "damageBonus": "+3"
+    },
+    {
+      "name": "🤺 Estoc",
+      "toHit": "+5",
+      "damage": "1d8",
+      "damageBonus": "+3"
+    }
+  ],
+  "equipment": "Armure de cuir clouté (12 + mod. Dex)\n2 hachettes (1d6 tranchant) (Légère, Lancer 6/18 m)\nÉpée courte (1d6 perforant) (Finesse, Légère)\nEstoc (1d8 perforant) (Impact profond, Finesse)\nArc long (1d8 perforant) (Munitions (portée 45/180 m), Lourde, deux mains)\n20 flèches\n\nUn sac à dos\nUn sac de couchage\nUn nécessaire de cuisine\nUn briquet à silex\n10 torches\n10 jours de rations\nUne outre\n15 mètres (50 pieds) de corde attachée sur le côté du sac",
+  "otherProficiencies": "Armures : toutes les armures, boucliers.\nArmes : armes courantes, armes de guerre.\nOutils : aucun.\nJets de sauvegarde : Force, Constitution.\nCompétences : choisir trois parmi Acrobaties, Dressage, Athlétisme, Histoire, Perspicacité, Intimidation, Perception et Survie.\n\nHistorique — Mercenaire :\n- Compétence (au choix) : Intimidation, Athlétisme, Nature ou Survie\n- Outil : un jeu ou un instrument de musique\n- Équipement : vêtements courants et 4d6 + 8 ortegs",
+  "features": [
+    {
+      "title": "🛡️ Réaction défensive",
+      "category": "Classe",
+      "body": "Lorsque vous êtes touché par une attaque, vous pouvez utiliser votre réaction pour gagner des points de vie temporaires égaux à 2d4 + votre modificateur de Constitution. Vous les obtenez immédiatement et pouvez y appliquer les dégâts de l'attaque déclenchée.\n\nVous pouvez utiliser cette capacité un nombre de fois égal à votre bonus de maîtrise, puis vous devez terminer un repos long pour pouvoir l'utiliser à nouveau (voir la ressource correspondante)."
+    },
+    {
+      "title": "⚔️ Style de combat — Duel",
+      "category": "Classe",
+      "body": "Lorsque vous maniez une arme de corps à corps dans une main et aucune autre arme, vous obtenez un bonus de +2 aux jets de dégâts avec cette arme."
+    },
+    {
+      "title": "🤺 Feinte",
+      "category": "Sous-classe",
+      "body": "Vous devez manier une arme avec la propriété finesse pour utiliser ces capacités.\n\nNiveau 1 : utilisez votre action bonus pour créer une ouverture dans votre défense jusqu'à votre prochain tour. Les adversaires ont l'avantage contre vous, mais vous pouvez utiliser votre réaction pour attaquer immédiatement après leur attaque (ce qui leur fait perdre l'avantage).\n\nNiveau 6 : utilisez votre action bonus pour feindre un adversaire en faisant un test de Dextérité (Escamotage) contre sa classe d'armure. En cas de succès, vous obtenez l'avantage sur vos attaques contre lui jusqu'à la fin de votre tour."
+    }
+  ],
+  "notes": "Reconstitué à partir des notes Obsidian d'origine (ch2 Battle Sheet, Ability Score, Feature Warrior, Feature Duelist, Équipement, Équipement Attaque et Défense, Proficiency).",
+  "isSpellcaster": false,
+  "spellcastingAbility": "int",
+  "spells": [],
+  "resources": [
+    {
+      "name": "🛡️ Réaction défensive",
+      "max": 2,
+      "current": 2,
+      "formula": "2d4 + 2",
+      "recharge": "Repos long"
+    }
+  ]
+}

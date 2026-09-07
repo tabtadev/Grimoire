@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grimoire — Fiches de personnage</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/idb-keyval@6/dist/umd.js"></script>
+<style>
+  :root{
+    --bg:#12141a;
+    --surface:#1a1d24;
+    --surface-2:#21252d;
+    --border:#2e333d;
+    --text:#e6e2d6;
+    --text-muted:#888d97;
+    --accent:#a33d3d;
+    --brass:#c19a56;
+    --gold:#e0c987;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg); color:var(--text); font-family:'Inter',sans-serif;
+    display:flex; min-height:100vh;
+  }
+  h1,h2,h3,.serif{ font-family:'Spectral',serif; }
+  input,textarea,select,button{ font-family:inherit; color:inherit; }
+  input,textarea,select{
+    background:var(--surface-2); border:1px solid var(--border); border-radius:4px;
+    padding:6px 8px; font-size:14px; color:var(--text);
+  }
+  input:focus,textarea:focus,select:focus{ outline:none; border-color:var(--brass); }
+  textarea{ resize:vertical; line-height:1.5; }
+  button{
+    cursor:pointer; border:1px solid var(--border); background:var(--surface-2); color:var(--text);
+    border-radius:4px; padding:7px 12px; font-size:13px; font-weight:500;
+    transition:border-color .15s, color .15s;
+  }
+  button:hover{ border-color:var(--brass); color:var(--brass); }
+  button.danger:hover{ border-color:var(--accent); color:var(--accent); }
+  button.primary{ background:var(--accent); border-color:var(--accent); color:#f2e9e4; }
+  button.primary:hover{ border-color:#c95656; color:#fff; }
+  button.ghost{ background:transparent; border-color:transparent; padding:6px 4px; }
+  button.roll-btn{ background:none; border:none; padding:0; font:inherit; }
+  label{ font-size:11px; color:var(--text-muted); display:block; margin-bottom:3px; letter-spacing:.02em; }
+
+  /* ---------- Sidebar ---------- */
+  #sidebar{ width:280px; flex:none; background:var(--surface); border-right:1px solid var(--border);
+    display:flex; flex-direction:column; height:100vh; position:sticky; top:0; }
+  #sidebar-header{ padding:22px 18px 14px; border-bottom:1px solid var(--border); }
+  #sidebar-header h1{ margin:0; font-size:22px; font-weight:600; }
+  #sidebar-header p{ margin:4px 0 0; font-size:12px; color:var(--text-muted); font-style:italic; }
+  #char-list{ flex:1; overflow-y:auto; padding:10px; }
+  #char-search{ margin:0 10px 4px; width:calc(100% - 20px); font-size:13px; }
+  .char-item{ padding:9px 10px; border-radius:5px; margin-bottom:4px; cursor:pointer; border:1px solid transparent;
+    display:flex; align-items:center; gap:10px; }
+  .char-item:hover{ background:var(--surface-2); }
+  .char-item.active{ background:var(--surface-2); border-color:var(--brass); }
+  .char-avatar{ width:30px; height:30px; border-radius:50%; flex:none; display:flex; align-items:center; justify-content:center;
+    font-family:'Spectral',serif; font-weight:700; font-size:13px; color:#12141a; }
+  .char-item .char-text{ min-width:0; flex:1; }
+  .char-item .name{ font-size:14px; font-weight:500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .char-item .sub{ font-size:11px; color:var(--text-muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  #sidebar-footer{ padding:12px; border-top:1px solid var(--border); display:flex; flex-direction:column; gap:8px; }
+  #sidebar-footer .row{ display:flex; gap:8px; }
+  #sidebar-footer button{ flex:1; }
+  #empty-state{ padding:20px 12px; color:var(--text-muted); font-size:13px; text-align:center; }
+  .folder-tag{ font-size:12px; color:var(--gold); background:var(--surface-2); border:1px solid var(--border);
+    border-radius:5px; padding:8px 10px; display:flex; align-items:center; gap:6px; }
+  .folder-tag span.dot{ width:6px; height:6px; border-radius:50%; background:var(--gold); flex:none; }
+  .reconnect-banner{ background:#2a2210; border:1px solid var(--brass); border-radius:6px; padding:9px 10px; font-size:12px; }
+  .reconnect-banner button{ margin-top:6px; width:100%; }
+  .hint{ font-size:11px; color:var(--text-muted); }
+
+  /* ---------- Main ---------- */
+  #main{ flex:1; min-width:0; padding:34px 40px 100px; }
+  #no-char{ max-width:520px; margin:80px auto; text-align:center; color:var(--text-muted); }
+  #no-char h2{ color:var(--text); font-weight:500; }
+  #sheet{ max-width:800px; margin:0 auto; }
+  .sheet-header{ display:flex; align-items:flex-end; justify-content:space-between; gap:20px; margin-bottom:6px; }
+  .sheet-header .name-input{ font-family:'Spectral',serif; font-size:32px; font-weight:600; background:transparent;
+    border:none; border-bottom:1px solid transparent; padding:2px 0; width:100%; }
+  .sheet-header .name-input:focus{ border-bottom-color:var(--brass); }
+  .sheet-actions{ display:flex; gap:6px; flex:none; }
+  .subline{ display:flex; gap:18px; margin-bottom:26px; flex-wrap:wrap; }
+  .subline input{ background:transparent; border:none; border-bottom:1px solid var(--border); border-radius:0;
+    padding:3px 0; font-size:13px; color:var(--text-muted); width:auto; min-width:140px; }
+  .subline .field{ display:flex; flex-direction:column; gap:2px; }
+
+  section.block{ margin-bottom:34px; }
+  section.block > h2{ font-size:14px; font-weight:600; color:var(--brass); margin:0 0 14px; padding-bottom:8px;
+    border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+
+  .stat-row{ display:grid; grid-template-columns:repeat(auto-fit,minmax(84px,1fr)); gap:10px; }
+  .stat-box{ background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:10px 12px; text-align:center; }
+  .stat-box label{ text-align:center; }
+  .stat-box input{ width:100%; text-align:center; font-size:18px; font-family:'Spectral',serif; font-weight:600;
+    background:transparent; border:none; padding:2px; }
+
+  .corruption-row{ display:grid; grid-template-columns:repeat(auto-fit,minmax(84px,1fr)); gap:10px; }
+  .computed-value{ font-size:18px; font-family:'Spectral',serif; font-weight:600; padding:2px; }
+  .stat-box input.over-threshold, .stat-box .computed-value.over-threshold{ color:var(--accent); }
+
+  .hp-quick-row{ display:flex; align-items:center; gap:8px; margin-top:10px; }
+  .hp-quick-row input{ width:70px; text-align:center; }
+  .hp-quick-row .hint{ margin-left:auto; }
+
+  .death-saves{ display:flex; align-items:center; gap:16px; margin-top:12px; font-size:12px; color:var(--text-muted); }
+  .death-saves .ds-group{ display:flex; align-items:center; gap:6px; }
+  .ds-pip{ width:16px; height:16px; border-radius:50%; border:2px solid var(--border); background:transparent; padding:0; cursor:pointer; }
+  .ds-pip.success{ border-color:var(--gold); }
+  .ds-pip.success.filled{ background:var(--gold); }
+  .ds-pip.failure{ border-color:var(--accent); }
+  .ds-pip.failure.filled{ background:var(--accent); }
+
+  .inspiration-btn{ font-size:18px; line-height:1; padding:7px 10px; }
+  .inspiration-btn.active{ border-color:var(--gold); color:var(--gold); background:#2a2210; }
+
+  .passive-row{ display:flex; gap:10px; margin:-4px 0 14px; }
+  .passive-box{ flex:1; background:var(--surface); border:1px solid var(--border); border-radius:6px;
+    padding:8px 10px; text-align:center; }
+  .passive-box .pv{ font-family:'Spectral',serif; font-size:17px; font-weight:700; }
+  .passive-box .pl{ font-size:10px; color:var(--text-muted); }
+
+  .score-stepper{ width:24px; height:24px; padding:0; font-size:14px; line-height:1; border-radius:4px; }
+
+  .abilities-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+  .ability-card{ background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:14px 16px; }
+  .ability-top{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+  .ability-top .aname{ font-size:12px; letter-spacing:.03em; color:var(--text-muted); }
+  .ability-top .amod{ font-family:'Spectral',serif; font-size:26px; font-weight:700; color:var(--text); min-width:42px;
+    text-align:right; cursor:pointer; }
+  .ability-top .amod:hover{ color:var(--gold); }
+  .ability-score-input{ width:56px; text-align:center; font-size:14px; }
+  .ability-score-row{ display:flex; align-items:center; gap:8px; margin-bottom:10px; }
+  .save-row, .skill-row{ display:flex; align-items:center; gap:7px; font-size:13px; padding:3px 0; }
+  .save-row{ padding-top:6px; margin-top:6px; border-top:1px dashed var(--border); color:var(--text-muted); }
+  .save-row .bonus, .skill-row .bonus{ margin-left:auto; font-family:'Spectral',serif; font-weight:600; color:var(--text);
+    cursor:pointer; }
+  .save-row .bonus:hover, .skill-row .bonus:hover{ color:var(--gold); }
+  .save-row.proficient, .skill-row.proficient{ color:var(--text); }
+  input[type=checkbox]{ width:14px; height:14px; accent-color:var(--brass); cursor:pointer; }
+
+  table.weapons{ width:100%; border-collapse:collapse; }
+  table.weapons th{ text-align:left; font-size:11px; color:var(--text-muted); font-weight:500; padding:0 8px 8px; }
+  table.weapons td{ padding:4px 8px 4px 0; vertical-align:middle; }
+  table.weapons td:first-child{ padding-left:0; }
+  table.weapons .name-cell{ display:flex; align-items:center; gap:4px; }
+  table.weapons .name-cell input{ flex:1; }
+  table.weapons td.tohit input, table.weapons td.dmg input{ width:70px; }
+  table.weapons td.rollcell{ white-space:nowrap; }
+  table.weapons td.rm{ width:26px; text-align:center; }
+  .roll-icon{ padding:4px 6px; font-size:14px; }
+
+  .feature{ background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:14px 16px; margin-bottom:12px; }
+  .feature-top{ display:flex; gap:6px; align-items:center; margin-bottom:8px; }
+  .feature-top input.feature-title{ flex:1; font-family:'Spectral',serif; font-size:16px; font-weight:600; background:transparent;
+    border:none; padding:2px 0; }
+  .feature-cat{ width:120px; flex:none; font-size:11px; padding:5px 7px; }
+  .feature textarea{ width:100%; min-height:70px; }
+  .feature-group-title{ font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--text-muted);
+    margin:16px 0 8px; }
+  .feature-group-title:first-child{ margin-top:0; }
+
+  .spell-meta{ display:grid; grid-template-columns:repeat(5,1fr); gap:6px; margin-bottom:8px; }
+  .spell-meta input{ font-size:11px; padding:5px 6px; width:100%; min-width:0; }
+  .spell-damage-row{ display:flex; gap:6px; align-items:center; margin-bottom:8px; }
+  .spell-damage-row input{ flex:1; min-width:0; }
+  .spell-stat-value{ font-family:'Spectral',serif; font-size:18px; font-weight:700; }
+  .spell-ability-select{ width:100%; text-align:center; background:transparent; border:none;
+    font-family:'Spectral',serif; font-weight:600; font-size:15px; }
+
+  .resource-card{ background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:14px 16px; margin-bottom:12px; }
+  .resource-top{ display:flex; gap:6px; align-items:center; margin-bottom:10px; }
+  .resource-top input.resource-name{ flex:1; font-family:'Spectral',serif; font-size:16px; font-weight:600;
+    background:transparent; border:none; padding:2px 0; }
+  .resource-pips{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px; }
+  .pip{ width:22px; height:22px; border-radius:50%; border:2px solid var(--brass); cursor:pointer; background:transparent; padding:0; }
+  .pip.filled{ background:var(--brass); }
+  .resource-row{ display:flex; align-items:center; gap:8px; margin-bottom:8px; flex-wrap:wrap; }
+  .resource-row label{ margin:0; white-space:nowrap; }
+  .resource-row input[type=number]{ width:56px; }
+  .resource-row input:not([type=number]){ flex:1; min-width:120px; }
+
+  textarea.freeform{ width:100%; min-height:90px; }
+  .add-link{ font-size:13px; color:var(--brass); background:none; border:none; padding:0; }
+  .add-link:hover{ text-decoration:underline; }
+
+  /* ---------- Emoji picker ---------- */
+  .emoji-picker{ position:relative; display:inline-block; flex:none; }
+  .emoji-picker summary{ list-style:none; cursor:pointer; width:30px; height:30px; display:flex; align-items:center;
+    justify-content:center; border:1px solid var(--border); border-radius:4px; font-size:14px; }
+  .emoji-picker summary::-webkit-details-marker{ display:none; }
+  .emoji-picker summary:hover{ border-color:var(--brass); }
+  .emoji-picker[open] summary{ border-color:var(--brass); }
+  .emoji-grid{ position:absolute; top:110%; right:0; z-index:60; display:grid; grid-template-columns:repeat(8,1fr);
+    gap:2px; background:var(--surface-2); border:1px solid var(--border); border-radius:6px; padding:6px; width:232px;
+    box-shadow:0 8px 24px rgba(0,0,0,.4); }
+  .emoji-opt{ background:none; border:none; padding:4px; font-size:16px; border-radius:4px; }
+  .emoji-opt:hover{ background:var(--bg); }
+
+  /* ---------- Roll log ---------- */
+  #roll-log{ position:fixed; bottom:16px; right:16px; width:260px; max-height:60vh; overflow-y:auto;
+    display:none; flex-direction:column; gap:6px; z-index:100; }
+  #roll-log.show{ display:flex; }
+  .roll-log-head{ display:flex; justify-content:space-between; align-items:center; font-size:11px; color:var(--text-muted); }
+  .roll-log-head button{ padding:2px 8px; font-size:11px; }
+  .roll-entry{ background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:8px 10px;
+    display:flex; align-items:center; gap:10px; animation:rollin .15s ease-out; }
+  .roll-entry.crit{ border-color:var(--gold); }
+  .roll-entry.fumble{ border-color:var(--accent); }
+  @keyframes rollin{ from{ transform:translateY(6px); opacity:0; } to{ transform:translateY(0); opacity:1; } }
+  .rl-text{ flex:1; min-width:0; }
+  .rl-label{ font-size:12px; font-weight:600; }
+  .rl-detail{ font-size:11px; color:var(--text-muted); }
+  .rl-total{ font-family:'Spectral',serif; font-size:20px; font-weight:700; flex:none; }
+  .roll-entry.crit .rl-total{ color:var(--gold); }
+  .roll-entry.fumble .rl-total{ color:var(--accent); }
+
+  /* ---------- Onboarding & save status ---------- */
+  .onboard-banner{ display:flex; justify-content:space-between; align-items:center; gap:20px;
+    background:var(--surface); border:1px solid var(--brass); border-radius:8px; padding:16px 18px; margin-bottom:24px; }
+  .onboard-banner strong{ font-family:'Spectral',serif; font-size:15px; font-weight:600; }
+  .onboard-actions{ display:flex; gap:8px; flex:none; }
+  #save-status{ display:block; font-size:11px; color:var(--text-muted); margin:-4px 0 16px; min-height:14px; }
+  #save-status.pending{ color:var(--brass); }
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <div id="sidebar-header">
+    <h1>Grimoire</h1>
+    <p>Vos fiches de personnage, en local</p>
+  </div>
+  <input id="char-search" type="text" placeholder="🔎 Rechercher un personnage...">
+  <div id="char-list"></div>
+  <div id="sidebar-footer"></div>
+  <input type="file" id="file-input" accept="application/json" style="display:none;">
+  <datalist id="feature-categories">
+    <option value="Classe">
+    <option value="Sous-classe">
+    <option value="Espèce">
+    <option value="Historique">
+    <option value="Don">
+    <option value="Équipement magique">
+    <option value="Autre">
+  </datalist>
+</div>
+
+<div id="main"></div>
+
+<div id="roll-log">
+  <div class="roll-log-head"><span>Jets récents</span><button data-action="clear-rolls">Effacer</button></div>
+  <div id="roll-log-entries"></div>
+</div>
+
+<script>
+/* ---------------------------------------------------------------------
+   Données de référence
+--------------------------------------------------------------------- */
+const ABILITY_LABELS = { str:'Force', dex:'Dextérité', con:'Constitution', int:'Intelligence', wis:'Sagesse', cha:'Charisme' };
+const SKILLS = {
+  str: [{k:'athletics', l:'Athlétisme'}],
+  dex: [{k:'acrobatics', l:'Acrobaties'}, {k:'sleightOfHand', l:'Escamotage'}, {k:'stealth', l:'Discrétion'}],
+  con: [],
+  int: [{k:'arcana', l:'Arcanes'}, {k:'history', l:'Histoire'}, {k:'investigation', l:'Investigation'}, {k:'nature', l:'Nature'}, {k:'religion', l:'Religion'}],
+  wis: [{k:'animalHandling', l:'Dressage'}, {k:'insight', l:'Perspicacité'}, {k:'medicine', l:'Médecine'}, {k:'perception', l:'Perception'}, {k:'survival', l:'Survie'}],
+  cha: [{k:'deception', l:'Tromperie'}, {k:'intimidation', l:'Intimidation'}, {k:'performance', l:'Représentation'}, {k:'persuasion', l:'Persuasion'}]
+};
+const EMOJIS = ['⚔️','🛡️','🏹','🗡️','🔥','❄️','⚡','☠️','💀','🐉','🧙','🧝','🧛','🧟','🎯','💰','📜','🧪','🔮','✨','🩸','👁️','🤝','🏰','👑','🎭','🐍','🦴','🌙','⭐','🕯️','🗝️'];
+
+/* ---------------------------------------------------------------------
+   État
+--------------------------------------------------------------------- */
+const STORAGE_KEY = 'grimoire-characters';
+const ACTIVE_KEY = 'grimoire-active-id';
+const DIR_KEY = 'grimoire-dir-handle';
+
+let state = {
+  characters: [],
+  activeId: null,
+  mode: 'local',        // 'local' | 'folder'
+  dirHandle: null,
+  fileHandles: {},       // charId -> FileSystemFileHandle
+  pendingHandle: null,   // stored handle awaiting permission re-grant
+  onboardDismissed: localStorage.getItem('grimoire-onboard-dismissed') === '1'
+};
+let rollLog = [];
+const writeTimers = {};
+
+function uid(){ return 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+
+function defaultCharacter(name){
+  const abilities = {};
+  for (const key of Object.keys(ABILITY_LABELS)){
+    const skills = {};
+    SKILLS[key].forEach(s => skills[s.k] = false);
+    abilities[key] = { score:10, save:false, skills };
+  }
+  return {
+    id: uid(),
+    name: name || 'Nouveau personnage',
+    classLevel: '', background: '', alignment: '',
+    hp: { max:10, current:10, temp:0 }, ac:10, speed:30, initiative:0,
+    inspiration: false,
+    deathSaves: { success:0, failure:0 },
+    corruption: { temp:0, perm:0, current:0, threshold:6 },
+    proficiencyBonus: 2,
+    abilities,
+    weapons: [], equipment: '', otherProficiencies: '', features: [], notes: '',
+    isSpellcaster: false, spellcastingAbility: 'int', spells: [],
+    resources: []
+  };
+}
+
+/* ---------------------------------------------------------------------
+   Persistance — stockage local (fallback / mode par défaut)
+--------------------------------------------------------------------- */
+function loadLocal(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    state.characters = raw ? JSON.parse(raw).map(normalizeCharacter) : [];
+  }catch(e){ state.characters = []; }
+  state.activeId = localStorage.getItem(ACTIVE_KEY) || (state.characters[0] && state.characters[0].id) || null;
+}
+function persistLocal(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state.characters));
+  if (state.activeId) localStorage.setItem(ACTIVE_KEY, state.activeId);
+}
+function activeChar(){ return state.characters.find(c => c.id === state.activeId) || null; }
+
+/* ---------------------------------------------------------------------
+   Persistance — dossier lié (File System Access API, Chrome/Edge)
+--------------------------------------------------------------------- */
+function supportsFolderLink(){ return 'showDirectoryPicker' in window && window.self === window.top; }
+
+async function tryReconnectFolder(){
+  if (!supportsFolderLink() || !window.idbKeyval) return;
+  try{
+    const handle = await idbKeyval.get(DIR_KEY);
+    if (!handle) return;
+    const perm = await handle.queryPermission({ mode:'readwrite' });
+    if (perm === 'granted'){
+      state.dirHandle = handle; state.mode = 'folder';
+      await scanFolder();
+    } else {
+      state.pendingHandle = handle;
+    }
+  }catch(e){ /* handle no longer valid, ignore */ }
+}
+
+async function pickFolder(){
+  if (!supportsFolderLink()){
+    alert("Lier un dossier fonctionne dans Chrome ou Edge. Utilisez Importer / Exporter en attendant.");
+    return;
+  }
+  try{
+    const handle = await window.showDirectoryPicker({ mode:'readwrite' });
+    if (window.idbKeyval) await idbKeyval.set(DIR_KEY, handle);
+    state.dirHandle = handle; state.mode = 'folder'; state.pendingHandle = null;
+    await scanFolder();
+  }catch(e){ /* annulé par l'utilisateur */ }
+}
+
+async function reconnectFolder(){
+  const handle = state.pendingHandle;
+  if (!handle) return;
+  try{
+    const perm = await handle.requestPermission({ mode:'readwrite' });
+    if (perm === 'granted'){
+      state.dirHandle = handle; state.mode = 'folder'; state.pendingHandle = null;
+      await scanFolder();
+    }
+  }catch(e){}
+}
+
+function unlinkFolder(){
+  state.mode = 'local'; state.dirHandle = null; state.fileHandles = {}; state.pendingHandle = null;
+  if (window.idbKeyval) idbKeyval.del(DIR_KEY);
+  loadLocal();
+  renderAll();
+}
+
+async function scanFolder(){
+  const handle = state.dirHandle;
+  const loaded = [];
+  state.fileHandles = {};
+  for await (const entry of handle.values()){
+    if (entry.kind !== 'file' || !entry.name.toLowerCase().endsWith('.json')) continue;
+    try{
+      const file = await entry.getFile();
+      const data = JSON.parse(await file.text());
+      const items = Array.isArray(data) ? data : [data];
+      items.forEach(raw => {
+        if (!raw || typeof raw !== 'object') return;
+        const ch = normalizeCharacter(Object.assign(defaultCharacter(raw.name), raw));
+        if (!ch.id) ch.id = uid();
+        loaded.push(ch);
+        state.fileHandles[ch.id] = entry;
+      });
+    }catch(e){ console.warn('Fichier ignoré (JSON invalide) :', entry.name); }
+  }
+  state.characters = loaded;
+  state.activeId = loaded[0] ? loaded[0].id : null;
+}
+
+async function writeCharToDisk(ch){
+  if (state.mode !== 'folder' || !state.dirHandle) return;
+  try{
+    let entry = state.fileHandles[ch.id];
+    if (!entry){
+      entry = await state.dirHandle.getFileHandle(`perso-${ch.id}.json`, { create:true });
+      state.fileHandles[ch.id] = entry;
+    }
+    const writable = await entry.createWritable();
+    await writable.write(JSON.stringify(ch, null, 2));
+    await writable.close();
+  }catch(e){ console.warn('Écriture impossible sur le disque', e); }
+}
+async function deleteCharFromDisk(ch){
+  if (state.mode !== 'folder' || !state.dirHandle) return;
+  const entry = state.fileHandles[ch.id];
+  if (entry){
+    try{ await state.dirHandle.removeEntry(entry.name); }catch(e){}
+    delete state.fileHandles[ch.id];
+  }
+}
+
+/* Point d'entrée unique pour toute sauvegarde après une modification */
+const AUTOSAVE_DELAY = 800; // ms d'inactivité avant d'écrire sur disque
+
+function nowTime(){
+  return new Date().toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+}
+function setSaveStatus(text, pending){
+  const el = document.getElementById('save-status');
+  if (!el) return;
+  el.textContent = text;
+  el.classList.toggle('pending', !!pending);
+}
+
+function saveState(){
+  const c = activeChar();
+  if (!c) return;
+  if (state.mode === 'folder'){
+    setSaveStatus('Modifié — sauvegarde en cours…', true);
+    clearTimeout(writeTimers[c.id]);
+    writeTimers[c.id] = setTimeout(async () => {
+      await writeCharToDisk(c);
+      setSaveStatus('Enregistré sur disque à ' + nowTime());
+    }, AUTOSAVE_DELAY);
+  } else {
+    setSaveStatus('Modifié — sauvegarde en cours…', true);
+    clearTimeout(writeTimers[c.id]);
+    writeTimers[c.id] = setTimeout(() => {
+      persistLocal();
+      setSaveStatus('Enregistré à ' + nowTime());
+    }, AUTOSAVE_DELAY);
+  }
+}
+function saveNow(ch){
+  clearTimeout(writeTimers[ch.id]);
+  if (state.mode === 'folder') writeCharToDisk(ch);
+  else persistLocal();
+  if (ch.id === state.activeId) setSaveStatus('Enregistré à ' + nowTime());
+}
+function flushPendingSaves(){
+  Object.keys(writeTimers).forEach(id => {
+    clearTimeout(writeTimers[id]);
+    const ch = state.characters.find(x => x.id === id);
+    if (!ch) return;
+    if (state.mode === 'folder') writeCharToDisk(ch);
+    else persistLocal();
+  });
+}
+window.addEventListener('beforeunload', flushPendingSaves);
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flushPendingSaves(); });
+
+/* ---------------------------------------------------------------------
+   Helpers
+--------------------------------------------------------------------- */
+function mod(score){ return Math.floor((Number(score) - 10) / 2); }
+function fmt(n){ return (n >= 0 ? '+' : '') + n; }
+function setPath(obj, path, value){
+  const keys = path.split('.'); let o = obj;
+  for (let i=0;i<keys.length-1;i++) o = o[keys[i]];
+  o[keys[keys.length-1]] = value;
+}
+function esc(s){ return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function normalizeCharacter(ch){
+  ch.hp = Object.assign({ max:10, current:10, temp:0 }, ch.hp || {});
+  ch.deathSaves = Object.assign({ success:0, failure:0 }, ch.deathSaves || {});
+  ch.corruption = Object.assign({ temp:0, perm:0, current:0, threshold:6 }, ch.corruption || {});
+  if (typeof ch.inspiration !== 'boolean') ch.inspiration = false;
+  return ch;
+}
+function slug(s){
+  return (s || 'personnage').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'') || 'personnage';
+}
+function emojiPickerHTML(path){
+  return `<details class="emoji-picker"><summary>😀</summary>
+    <div class="emoji-grid">${EMOJIS.map(e => `<button type="button" class="emoji-opt" data-emoji="${e}" data-for="${path}">${e}</button>`).join('')}</div>
+  </details>`;
+}
+
+/* ---------------------------------------------------------------------
+   Dés
+--------------------------------------------------------------------- */
+function rand20(){ return 1 + Math.floor(Math.random()*20); }
+function addRollEntry(label, detail, total, flag){
+  rollLog.unshift({ label, detail, total, flag, id: Date.now()+Math.random() });
+  if (rollLog.length > 8) rollLog.pop();
+  renderRollLog();
+}
+function rollD20(label, bonus, mode){
+  const d1 = rand20();
+  const d2 = mode !== 'normal' ? rand20() : null;
+  const picked = d2 === null ? d1 : (mode === 'adv' ? Math.max(d1,d2) : Math.min(d1,d2));
+  const total = picked + bonus;
+  const modeTxt = mode === 'adv' ? ' (avantage)' : mode === 'dis' ? ' (désavantage)' : '';
+  const detail = d2 === null ? `d20(${d1}) ${fmt(bonus)}` : `d20(${d1}, ${d2} → ${picked}) ${fmt(bonus)}`;
+  addRollEntry(label + modeTxt, detail, total, picked === 20 ? 'crit' : picked === 1 ? 'fumble' : '');
+}
+function rollDamage(label, formula){
+  const clean = (formula || '').replace(/\s+/g,'');
+  const tokens = clean.match(/[+-]?[^+-]+/g);
+  if (!tokens){ addRollEntry(label, 'aucune formule de dégâts', '—', ''); return; }
+  let total = 0; const parts = [];
+  tokens.forEach(tok => {
+    const sign = tok.startsWith('-') ? -1 : 1;
+    const t = tok.replace(/^[+-]/,'');
+    const dice = t.match(/^(\d*)d(\d+)$/i);
+    if (dice){
+      const n = Number(dice[1] || 1), sides = Number(dice[2]);
+      const rolls = Array.from({length:n}, () => 1 + Math.floor(Math.random()*sides));
+      total += sign * rolls.reduce((a,b) => a+b, 0);
+      parts.push(`${sign<0?'-':''}${n}d${sides}(${rolls.join(',')})`);
+    } else if (/^\d+$/.test(t)){
+      total += sign * Number(t);
+      parts.push(`${sign<0?'-':''}${t}`);
+    }
+  });
+  addRollEntry(label, parts.join(' ') || 'formule invalide', total, '');
+}
+function renderRollLog(){
+  const wrap = document.getElementById('roll-log');
+  const box = document.getElementById('roll-log-entries');
+  wrap.classList.toggle('show', rollLog.length > 0);
+  box.innerHTML = rollLog.map(r => `
+    <div class="roll-entry ${r.flag}">
+      <div class="rl-text"><div class="rl-label">${esc(r.label)}</div><div class="rl-detail">${esc(r.detail)}</div></div>
+      <div class="rl-total">${r.total}</div>
+    </div>`).join('');
+}
+
+/* ---------------------------------------------------------------------
+   Rendu : barre latérale
+--------------------------------------------------------------------- */
+const AVATAR_COLORS = ['#c19a56','#a33d3d','#5a8f8a','#7a8fc9','#a5729a','#8fa55a'];
+function avatarColor(name){
+  const s = name || '?';
+  let hash = 0;
+  for (let i=0;i<s.length;i++) hash = (hash * 31 + s.charCodeAt(i)) >>> 0;
+  return AVATAR_COLORS[hash % AVATAR_COLORS.length];
+}
+
+function renderSidebar(){
+  const list = document.getElementById('char-list');
+  const search = document.getElementById('char-search');
+  const query = (search ? search.value : state.searchQuery || '').trim().toLowerCase();
+  state.searchQuery = query;
+  const visible = query
+    ? state.characters.filter(c => (c.name || '').toLowerCase().includes(query) || (c.classLevel || '').toLowerCase().includes(query))
+    : state.characters;
+
+  if (state.characters.length === 0){
+    list.innerHTML = `<div id="empty-state">Aucun personnage${state.mode==='folder' ? ' dans ce dossier' : ''}.<br>Cliquez sur « + Nouveau ».</div>`;
+  } else if (visible.length === 0){
+    list.innerHTML = `<div id="empty-state">Aucun résultat pour « ${esc(query)} ».</div>`;
+  } else {
+    list.innerHTML = visible.map(c => `
+      <div class="char-item ${c.id === state.activeId ? 'active' : ''}" data-action="select-char" data-id="${c.id}">
+        <div class="char-avatar" style="background:${avatarColor(c.name)};">${esc((c.name || '?').trim().charAt(0).toUpperCase())}</div>
+        <div class="char-text">
+          <div class="name">${c.inspiration ? '⭐ ' : ''}${esc(c.name || 'Sans nom')}</div>
+          <div class="sub">${esc(c.classLevel || '—')}</div>
+        </div>
+      </div>`).join('');
+  }
+  renderFooter();
+}
+
+function renderFooter(){
+  const footer = document.getElementById('sidebar-footer');
+  let html = '';
+
+  if (state.pendingHandle){
+    html += `<div class="reconnect-banner">🔒 Le dossier « ${esc(state.pendingHandle.name)} » était lié. Ré-autorisez l'accès pour continuer à l'utiliser.
+      <button data-action="reconnect-folder">Autoriser l'accès</button></div>`;
+  }
+
+  if (state.mode === 'folder'){
+    html += `<div class="folder-tag"><span class="dot"></span> ${esc(state.dirHandle.name)}</div>`;
+    html += `<div class="row"><button data-action="pick-folder">Changer</button><button data-action="unlink-folder">Local</button></div>`;
+  } else if (supportsFolderLink()){
+    html += `<div class="row"><button data-action="pick-folder">📁 Lier un dossier</button></div>`;
+  }
+
+  html += `<div class="row"><button class="primary" data-action="new-char">+ Nouveau</button><button data-action="trigger-import">Importer</button></div>`;
+  html += `<div class="row"><button data-action="export-all">Exporter tout</button></div>`;
+
+  html += state.mode === 'folder'
+    ? `<div class="hint">Chaque personnage est sauvegardé automatiquement dans ce dossier, sous forme de fichier .json.</div>`
+    : `<div class="hint">Tout reste dans ce navigateur. Exportez en JSON pour garder une copie, ou liez un dossier (Chrome/Edge) pour une sauvegarde automatique sur disque.</div>`;
+
+  footer.innerHTML = html;
+}
+
+/* ---------------------------------------------------------------------
+   Rendu : contenu principal
+--------------------------------------------------------------------- */
+function onboardingHTML(){
+  if (state.mode === 'folder' || state.onboardDismissed || !supportsFolderLink() || state.pendingHandle) return '';
+  return `<div class="onboard-banner">
+    <div>
+      <strong>📁 Faire de Grimoire un dossier autonome ?</strong>
+      <div class="hint" style="margin-top:4px;">Choisissez le dossier où se trouve ce fichier Grimoire.html : l'app y lira et y sauvegardera vos personnages toute seule, à chaque ouverture.</div>
+    </div>
+    <div class="onboard-actions">
+      <button class="primary" data-action="pick-folder">Choisir ce dossier</button>
+      <button class="ghost" data-action="dismiss-onboard">Non merci</button>
+    </div>
+  </div>`;
+}
+
+function renderMain(){
+  const main = document.getElementById('main');
+  const c = activeChar();
+  const banner = onboardingHTML();
+  if (!c){
+    main.innerHTML = banner + `<div id="no-char"><h2>Aucune fiche sélectionnée</h2>
+      <p>Créez un nouveau personnage, importez un JSON, ou liez le dossier où se trouvent déjà vos fiches.</p></div>`;
+    return;
+  }
+  main.innerHTML = banner + `
+    <div id="sheet">
+      <div class="sheet-header">
+        <input class="name-input" data-path="name" value="${esc(c.name)}" placeholder="Nom du personnage">
+        <div class="sheet-actions">
+          <button class="inspiration-btn ${c.inspiration ? 'active' : ''}" data-action="toggle-inspiration" title="Inspiration">⭐</button>
+          <button data-action="duplicate-char">Dupliquer</button>
+          <button data-action="export-char">Exporter</button>
+          <button class="danger" data-action="delete-char">Supprimer</button>
+        </div>
+      </div>
+      <div id="save-status"></div>
+      <div class="subline">
+        <div class="field"><label>Classe & niveau</label><input data-path="classLevel" value="${esc(c.classLevel)}" placeholder="ex. Guerrier 3"></div>
+        <div class="field"><label>Historique</label><input data-path="background" value="${esc(c.background)}" placeholder="ex. Noblesse"></div>
+        <div class="field"><label>Alignement</label><input data-path="alignment" value="${esc(c.alignment)}" placeholder="ex. Loyal Bon"></div>
+      </div>
+
+      <section class="block">
+        <h2>Combat</h2>
+        <div class="passive-row" id="passive-row"></div>
+        <div class="stat-row">
+          <div class="stat-box"><label>PV max</label><input type="number" data-path="hp.max" value="${c.hp.max}"></div>
+          <div class="stat-box"><label>PV actuels</label><input type="number" data-path="hp.current" value="${c.hp.current}"></div>
+          <div class="stat-box"><label>PV temp.</label><input type="number" data-path="hp.temp" value="${c.hp.temp || 0}"></div>
+          <div class="stat-box"><label>CA</label><input type="number" data-path="ac" value="${c.ac}"></div>
+          <div class="stat-box"><label>Vitesse</label><input type="number" data-path="speed" value="${c.speed}"></div>
+          <div class="stat-box"><label>Initiative</label><input type="number" data-path="initiative" value="${c.initiative}"></div>
+          <div class="stat-box"><label>Bonus maîtrise</label><input type="number" data-path="proficiencyBonus" data-recompute="abilities,spellcasting" value="${c.proficiencyBonus}"></div>
+        </div>
+        <div class="hp-quick-row">
+          <input type="number" id="hp-adjust-amount" placeholder="Montant" min="0">
+          <button type="button" data-action="hp-damage">🩸 Dégâts</button>
+          <button type="button" data-action="hp-heal">✚ Soin</button>
+          <span class="hint">Les dégâts consomment d'abord les PV temporaires.</span>
+        </div>
+        <div class="death-saves">
+          <span>Jets de sauvegarde contre la mort :</span>
+          <div class="ds-group">Réussites
+            ${[0,1,2].map(i => `<button type="button" class="ds-pip success ${i < (c.deathSaves.success||0) ? 'filled' : ''}" data-action="toggle-death-pip" data-kind="success" data-pip="${i}"></button>`).join('')}
+          </div>
+          <div class="ds-group">Échecs
+            ${[0,1,2].map(i => `<button type="button" class="ds-pip failure ${i < (c.deathSaves.failure||0) ? 'filled' : ''}" data-action="toggle-death-pip" data-kind="failure" data-pip="${i}"></button>`).join('')}
+          </div>
+          <button type="button" class="ghost" data-action="reset-death-saves" title="Réinitialiser">↺</button>
+        </div>
+      </section>
+
+      <section class="block">
+        <h2>Ressources <span style="display:flex;gap:8px;">
+          <button class="add-link" data-action="short-rest" title="Réinitialise les ressources en 'Repos court'">☀️ Repos court</button>
+          <button class="add-link" data-action="long-rest" title="Réinitialise la corruption temporaire et les ressources en 'Repos long'">🌙 Repos long</button>
+          <button class="add-link" data-action="add-resource">+ nouvelle ressource</button>
+        </span></h2>
+        <div id="resources-container"></div>
+      </section>
+
+      <section class="block">
+        <h2>Corruption</h2>
+        <div class="hint" style="margin:-8px 0 12px;">La corruption temporaire se réinitialise via le Repos long (section Ressources ci-dessus).</div>
+        <div id="corruption-container"></div>
+      </section>
+
+      <section class="block">
+        <h2>Caractéristiques <span class="hint">clic = jet · Maj = avantage · Alt = désavantage</span></h2>
+        <div id="abilities-container"></div>
+      </section>
+
+      <section class="block">
+        <h2>Armes <button class="add-link" data-action="add-weapon">+ ajouter une arme</button></h2>
+        <div id="weapons-container"></div>
+      </section>
+
+      <section class="block">
+        <h2>Équipement</h2>
+        <textarea class="freeform" data-path="equipment" placeholder="Une chose par ligne...">${esc(c.equipment)}</textarea>
+      </section>
+
+      <section class="block">
+        <h2>Autres maîtrises</h2>
+        <textarea class="freeform" data-path="otherProficiencies" placeholder="Armures, armes, outils, langues, jets de sauvegarde, compétences...">${esc(c.otherProficiencies)}</textarea>
+      </section>
+
+      <section class="block">
+        <h2>🔮 Incantation</h2>
+        <div class="save-row" style="border:none;margin:0 0 12px;padding:0;">
+          <input type="checkbox" data-path="isSpellcaster" data-recompute="spellcasting" ${c.isSpellcaster ? 'checked' : ''}>
+          <span>Ce personnage lance des sorts</span>
+        </div>
+        <div id="spellcasting-details"></div>
+      </section>
+
+      <section class="block" id="spells-section">
+        <h2>Sorts <button class="add-link" data-action="add-spell">+ nouveau sort</button></h2>
+        <div id="spells-container"></div>
+      </section>
+
+      <section class="block">
+        <h2>Capacités <button class="add-link" data-action="add-feature">+ nouvelle capacité</button></h2>
+        <div id="features-container"></div>
+      </section>
+
+      <section class="block">
+        <h2>Notes</h2>
+        <textarea class="freeform" data-path="notes" placeholder="Tout ce qui ne rentre pas ailleurs...">${esc(c.notes)}</textarea>
+      </section>
+    </div>`;
+  renderAbilities(); renderWeapons(); renderFeatures(); renderSpellcasting(); renderSpells(); renderResources(); renderCorruption(); renderPassiveRow();
+}
+
+function renderPassiveRow(){
+  const c = activeChar();
+  const el = document.getElementById('passive-row');
+  if (!el) return;
+  const passive = (abilityKey, skillKey) => 10 + mod(c.abilities[abilityKey].score) + (c.abilities[abilityKey].skills[skillKey] ? c.proficiencyBonus : 0);
+  const items = [
+    ['Perception passive', passive('wis','perception')],
+    ['Investigation passive', passive('int','investigation')],
+    ['Perspicacité passive', passive('wis','insight')]
+  ];
+  el.innerHTML = items.map(([label, val]) => `<div class="passive-box"><div class="pv">${val}</div><div class="pl">${label}</div></div>`).join('');
+}
+
+function renderCorruption(){
+  const c = activeChar();
+  const container = document.getElementById('corruption-container');
+  if (!container) return;
+  const temp = Number(c.corruption.temp) || 0;
+  const perm = Number(c.corruption.perm) || 0;
+  const threshold = Number(c.corruption.threshold) || 0;
+  const current = temp + perm;
+  c.corruption.current = current;
+  const permOver = perm > threshold;
+  const curOver = current > threshold;
+  container.innerHTML = `
+    <div class="corruption-row">
+      <div class="stat-box"><label>Temporaire</label><input type="number" data-path="corruption.temp" data-recompute="corruption" value="${temp}"></div>
+      <div class="stat-box"><label>Permanente</label><input type="number" class="${permOver ? 'over-threshold' : ''}" data-path="corruption.perm" data-recompute="corruption" value="${perm}"></div>
+      <div class="stat-box"><label>Actuelle</label><div class="computed-value ${curOver ? 'over-threshold' : ''}">${current}</div></div>
+      <div class="stat-box"><label>Seuil</label><input type="number" data-path="corruption.threshold" data-recompute="corruption" value="${threshold}"></div>
+    </div>`;
+}
+
+function renderResources(){
+  const c = activeChar();
+  const container = document.getElementById('resources-container');
+  if (!container) return;
+  if (c.resources.length === 0){
+    container.innerHTML = `<div class="hint">Aucune ressource à utilisations limitées. Cliquez sur « + nouvelle ressource » (ex. Réaction défensive, Rage, Ki...).</div>`;
+    return;
+  }
+  container.innerHTML = c.resources.map((r, i) => {
+    const max = Math.max(0, Number(r.max) || 0);
+    const current = Math.max(0, Math.min(max, Number(r.current) || 0));
+    const pips = Array.from({length: max}, (_, p) => `
+      <button type="button" class="pip ${p < current ? 'filled' : ''}" data-action="toggle-pip" data-index="${i}" data-pip="${p}" title="${p < current ? 'Utiliser' : 'Récupérer'}"></button>
+    `).join('');
+    return `
+      <div class="resource-card">
+        <div class="resource-top">
+          <input class="resource-name" data-path="resources.${i}.name" value="${esc(r.name)}" placeholder="Nom (ex. Réaction défensive)">
+          ${emojiPickerHTML(`resources.${i}.name`)}
+          <button class="ghost danger" data-action="remove-resource" data-index="${i}" title="Supprimer">✕</button>
+        </div>
+        <div class="resource-pips">${pips || '<span class="hint">Réglez un maximum ci-dessous pour afficher les jetons.</span>'}</div>
+        <div class="resource-row">
+          <label>Max</label><input type="number" data-path="resources.${i}.max" data-recompute="resources" value="${r.max}">
+          <input data-path="resources.${i}.recharge" value="${esc(r.recharge || '')}" placeholder="Recharge (ex. Repos long)">
+          <button type="button" data-action="reset-resource" data-index="${i}">↺ Réinitialiser</button>
+        </div>
+        <div class="resource-row">
+          <input data-path="resources.${i}.formula" value="${esc(r.formula || '')}" placeholder="Formule (ex. 2d4 + 2)">
+          <button class="ghost roll-icon" data-roll="resource" data-index="${i}" title="Lancer la formule">🎲</button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function spellStats(c){
+  const key = c.spellcastingAbility;
+  const m = mod(c.abilities[key].score);
+  return { m, dc: 8 + c.proficiencyBonus + m, atk: c.proficiencyBonus + m, corruptionCalc: (c.proficiencyBonus + m) * 2 };
+}
+
+function renderSpellcasting(){
+  const c = activeChar();
+  const details = document.getElementById('spellcasting-details');
+  const spellsSection = document.getElementById('spells-section');
+  if (!details) return;
+  if (!c.isSpellcaster){
+    details.innerHTML = `<div class="hint">Cochez la case ci-dessus pour afficher les statistiques d'incantation et la liste de sorts.</div>`;
+    if (spellsSection) spellsSection.style.display = 'none';
+    return;
+  }
+  if (spellsSection) spellsSection.style.display = '';
+  const s = spellStats(c);
+  details.innerHTML = `
+    <div class="stat-row" style="grid-template-columns:repeat(4,1fr);margin-bottom:10px;">
+      <div class="stat-box">
+        <label>Caractéristique</label>
+        <select class="spell-ability-select" data-path="spellcastingAbility" data-recompute="spellcasting">
+          ${Object.keys(ABILITY_LABELS).map(k => `<option value="${k}" ${c.spellcastingAbility === k ? 'selected' : ''}>${ABILITY_LABELS[k]}</option>`).join('')}
+        </select>
+      </div>
+      <div class="stat-box"><label>DD de sauvegarde</label><div class="spell-stat-value">${s.dc}</div></div>
+      <div class="stat-box"><label>Attaque de sort</label><div class="spell-stat-value">${fmt(s.atk)}</div></div>
+      <div class="stat-box"><label>Seuil corruption (calc.)</label><div class="spell-stat-value">${s.corruptionCalc}</div></div>
+    </div>
+    <button type="button" class="add-link" data-action="apply-threshold" data-value="${s.corruptionCalc}">↳ Appliquer ce seuil à la Corruption</button>`;
+}
+
+function renderSpells(){
+  const c = activeChar();
+  const container = document.getElementById('spells-container');
+  if (!container) return;
+  if (!c.isSpellcaster){ container.innerHTML = ''; return; }
+  if (c.spells.length === 0){
+    container.innerHTML = `<div class="hint">Aucun sort. Cliquez sur « + nouveau sort ».</div>`;
+    return;
+  }
+  container.innerHTML = c.spells.map((sp, i) => `
+    <div class="feature">
+      <div class="feature-top">
+        <input class="feature-title" data-path="spells.${i}.title" value="${esc(sp.title)}" placeholder="Nom du sort">
+        ${emojiPickerHTML(`spells.${i}.title`)}
+        <button class="ghost danger" data-action="remove-spell" data-index="${i}" title="Supprimer">✕</button>
+      </div>
+      <div class="spell-meta">
+        <input data-path="spells.${i}.level" value="${esc(sp.level)}" placeholder="Niveau">
+        <input data-path="spells.${i}.time" value="${esc(sp.time)}" placeholder="Temps d'incantation">
+        <input data-path="spells.${i}.range" value="${esc(sp.range)}" placeholder="Portée">
+        <input data-path="spells.${i}.duration" value="${esc(sp.duration)}" placeholder="Durée">
+        <input data-path="spells.${i}.cost" value="${esc(sp.cost)}" placeholder="Coût (Corruption)">
+      </div>
+      <div class="spell-damage-row">
+        <input data-path="spells.${i}.damage" value="${esc(sp.damage)}" placeholder="Dégâts (ex. 1d4) — laisser vide si aucun">
+        <button class="ghost roll-icon" data-roll="spell-attack" data-index="${i}" title="Jet d'attaque de sort">🎯</button>
+        <button class="ghost roll-icon" data-roll="spell-damage" data-index="${i}" title="Jet de dégâts">💥</button>
+      </div>
+      <textarea data-path="spells.${i}.description" placeholder="Description, effets, mise à l'échelle par niveau...">${esc(sp.description)}</textarea>
+    </div>
+  `).join('');
+}
+
+function renderAbilities(){
+  const c = activeChar();
+  const container = document.getElementById('abilities-container');
+  if (!container) return;
+  container.innerHTML = `<div class="abilities-grid">` + Object.keys(ABILITY_LABELS).map(key => {
+    const a = c.abilities[key];
+    const m = mod(a.score);
+    const saveBonus = m + (a.save ? c.proficiencyBonus : 0);
+    const skillsHtml = SKILLS[key].map(s => {
+      const has = !!a.skills[s.k];
+      const bonus = m + (has ? c.proficiencyBonus : 0);
+      return `
+        <div class="skill-row ${has ? 'proficient' : ''}">
+          <input type="checkbox" data-path="abilities.${key}.skills.${s.k}" data-recompute="abilities" ${has ? 'checked' : ''}>
+          <span>${s.l}</span>
+          <button type="button" class="bonus roll-btn" data-roll="skill" data-ability="${key}" data-skill="${s.k}" data-label="${esc(s.l)}">${fmt(bonus)}</button>
+        </div>`;
+    }).join('');
+    return `
+      <div class="ability-card">
+        <div class="ability-top">
+          <span class="aname">${ABILITY_LABELS[key]}</span>
+          <button type="button" class="amod roll-btn" data-roll="ability" data-ability="${key}">${fmt(m)}</button>
+        </div>
+        <div class="ability-score-row">
+          <label style="margin:0;">Score</label>
+          <button type="button" class="score-stepper" data-action="adjust-score" data-ability="${key}" data-delta="-1">–</button>
+          <input type="number" class="ability-score-input" data-path="abilities.${key}.score" data-recompute="abilities,spellcasting" value="${a.score}">
+          <button type="button" class="score-stepper" data-action="adjust-score" data-ability="${key}" data-delta="1">+</button>
+        </div>
+        <div class="save-row ${a.save ? 'proficient' : ''}">
+          <input type="checkbox" data-path="abilities.${key}.save" data-recompute="abilities" ${a.save ? 'checked' : ''}>
+          <span>Jet de sauvegarde</span>
+          <button type="button" class="bonus roll-btn" data-roll="save" data-ability="${key}">${fmt(saveBonus)}</button>
+        </div>
+        ${skillsHtml}
+      </div>`;
+  }).join('') + `</div>`;
+}
+
+function renderWeapons(){
+  const c = activeChar();
+  const container = document.getElementById('weapons-container');
+  if (!container) return;
+  if (c.weapons.length === 0){
+    container.innerHTML = `<div class="hint">Aucune arme. Cliquez sur « + ajouter une arme ».</div>`;
+    return;
+  }
+  container.innerHTML = `
+    <table class="weapons">
+      <thead><tr><th>Nom</th><th>Au toucher</th><th>Dégâts</th><th>+ Dégâts</th><th>Jet</th><th></th></tr></thead>
+      <tbody>
+        ${c.weapons.map((w, i) => `
+          <tr>
+            <td><div class="name-cell">
+              <input data-path="weapons.${i}.name" value="${esc(w.name)}" placeholder="Épée courte">
+              ${emojiPickerHTML(`weapons.${i}.name`)}
+            </div></td>
+            <td class="tohit"><input data-path="weapons.${i}.toHit" value="${esc(w.toHit)}" placeholder="+2"></td>
+            <td class="dmg"><input data-path="weapons.${i}.damage" value="${esc(w.damage)}" placeholder="1d6"></td>
+            <td class="dmg"><input data-path="weapons.${i}.damageBonus" value="${esc(w.damageBonus || '')}" placeholder="+1"></td>
+            <td class="rollcell">
+              <button class="ghost roll-icon" data-roll="attack" data-index="${i}" title="Jet d'attaque">🎯</button>
+              <button class="ghost roll-icon" data-roll="damage" data-index="${i}" title="Jet de dégâts">💥</button>
+            </td>
+            <td class="rm"><button class="ghost" data-action="remove-weapon" data-index="${i}" title="Supprimer">✕</button></td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>`;
+}
+
+function renderFeatures(){
+  const c = activeChar();
+  const container = document.getElementById('features-container');
+  if (!container) return;
+  if (c.features.length === 0){
+    container.innerHTML = `<div class="hint">Aucune capacité. Cliquez sur « + nouvelle capacité ».</div>`;
+    return;
+  }
+  // Regroupe les indices de capacités par catégorie, dans l'ordre de première apparition
+  const order = []; const groups = {};
+  c.features.forEach((f, i) => {
+    const key = (f.category || '').trim() || 'Sans catégorie';
+    if (!groups[key]){ groups[key] = []; order.push(key); }
+    groups[key].push(i);
+  });
+  container.innerHTML = order.map(key => `
+    <div class="feature-group-title">${esc(key)}</div>
+    ${groups[key].map(i => {
+      const f = c.features[i];
+      return `
+      <div class="feature">
+        <div class="feature-top">
+          <input class="feature-title" data-path="features.${i}.title" value="${esc(f.title)}" placeholder="Nom de la capacité">
+          ${emojiPickerHTML(`features.${i}.title`)}
+          <input class="feature-cat" list="feature-categories" data-path="features.${i}.category" data-recompute-on-change="features" value="${esc(f.category || '')}" placeholder="Catégorie">
+          <button class="ghost danger" data-action="remove-feature" data-index="${i}" title="Supprimer">✕</button>
+        </div>
+        <textarea data-path="features.${i}.body" placeholder="Description...">${esc(f.body)}</textarea>
+      </div>`;
+    }).join('')}
+  `).join('');
+}
+
+function renderAll(){ renderSidebar(); renderMain(); }
+
+/* ---------------------------------------------------------------------
+   Jets — gestion des clics sur les boutons de dé
+--------------------------------------------------------------------- */
+function handleRoll(btn, e){
+  const c = activeChar(); if (!c) return;
+  const type = btn.dataset.roll;
+  const mode = e.shiftKey ? 'adv' : (e.altKey || e.ctrlKey || e.metaKey) ? 'dis' : 'normal';
+  if (type === 'ability'){
+    const key = btn.dataset.ability;
+    rollD20(`${ABILITY_LABELS[key]} — jet`, mod(c.abilities[key].score), mode);
+  } else if (type === 'save'){
+    const key = btn.dataset.ability, a = c.abilities[key];
+    rollD20(`${ABILITY_LABELS[key]} — sauvegarde`, mod(a.score) + (a.save ? c.proficiencyBonus : 0), mode);
+  } else if (type === 'skill'){
+    const key = btn.dataset.ability, skill = btn.dataset.skill, a = c.abilities[key];
+    const bonus = mod(a.score) + (a.skills[skill] ? c.proficiencyBonus : 0);
+    rollD20(btn.dataset.label, bonus, mode);
+  } else if (type === 'attack'){
+    const w = c.weapons[Number(btn.dataset.index)];
+    rollD20(`${w.name || 'Arme'} — attaque`, parseInt(w.toHit) || 0, mode);
+  } else if (type === 'damage'){
+    const w = c.weapons[Number(btn.dataset.index)];
+    const formula = [w.damage, w.damageBonus].filter(Boolean).join('+').replace(/\+\+/g,'+').replace(/\+-/g,'-');
+    rollDamage(`${w.name || 'Arme'} — dégâts`, formula);
+  } else if (type === 'spell-attack'){
+    const sp = c.spells[Number(btn.dataset.index)];
+    rollD20(`${sp.title || 'Sort'} — attaque`, spellStats(c).atk, mode);
+  } else if (type === 'spell-damage'){
+    const sp = c.spells[Number(btn.dataset.index)];
+    rollDamage(`${sp.title || 'Sort'} — dégâts`, sp.damage);
+  } else if (type === 'resource'){
+    const r = c.resources[Number(btn.dataset.index)];
+    rollDamage(`${r.name || 'Ressource'}`, r.formula);
+  }
+}
+
+/* ---------------------------------------------------------------------
+   Interactions générales
+--------------------------------------------------------------------- */
+document.body.addEventListener('input', e => {
+  const el = e.target;
+  if (!el.dataset.path) return;
+  const c = activeChar(); if (!c) return;
+  const val = el.type === 'checkbox' ? el.checked : (el.type === 'number' ? Number(el.value) : el.value);
+  setPath(c, el.dataset.path, val);
+  saveState();
+  const recompute = (el.dataset.recompute || '').split(',').filter(Boolean);
+  if (recompute.includes('abilities')){ renderAbilities(); renderPassiveRow(); }
+  if (recompute.includes('spellcasting')) renderSpellcasting();
+  if (recompute.includes('resources')) renderResources();
+  if (recompute.includes('corruption')) renderCorruption();
+  if (el.dataset.path === 'name' || el.dataset.path === 'classLevel') renderSidebar();
+});
+
+document.body.addEventListener('click', e => {
+  const emojiBtn = e.target.closest('.emoji-opt');
+  if (emojiBtn){
+    const c = activeChar();
+    const input = document.querySelector(`[data-path="${emojiBtn.dataset.for}"]`);
+    if (c && input){
+      const start = input.selectionStart ?? input.value.length;
+      const end = input.selectionEnd ?? input.value.length;
+      const newVal = input.value.slice(0, start) + emojiBtn.dataset.emoji + input.value.slice(end);
+      input.value = newVal;
+      input.dispatchEvent(new Event('input', { bubbles:true }));
+      input.focus();
+      const pos = start + emojiBtn.dataset.emoji.length;
+      input.setSelectionRange(pos, pos);
+    }
+    const details = emojiBtn.closest('details');
+    if (details) details.removeAttribute('open');
+    return;
+  }
+
+  const rollBtn = e.target.closest('[data-roll]');
+  if (rollBtn){ handleRoll(rollBtn, e); return; }
+
+  const btn = e.target.closest('[data-action]');
+  if (!btn) return;
+  const action = btn.dataset.action;
+  const c = activeChar();
+
+  if (action === 'select-char'){
+    state.activeId = btn.dataset.id;
+    if (state.mode === 'local') persistLocal();
+    renderAll();
+  }
+  else if (action === 'new-char'){
+    const nc = defaultCharacter();
+    state.characters.push(nc);
+    state.activeId = nc.id;
+    saveNow(nc);
+    renderAll();
+  }
+  else if (action === 'duplicate-char' && c){
+    const copy = JSON.parse(JSON.stringify(c));
+    copy.id = uid(); copy.name = c.name + ' (copie)';
+    state.characters.push(copy);
+    state.activeId = copy.id;
+    saveNow(copy);
+    renderAll();
+  }
+  else if (action === 'delete-char' && c){
+    if (!confirm(`Supprimer « ${c.name} » ? Cette action est irréversible.`)) return;
+    if (state.mode === 'folder') deleteCharFromDisk(c);
+    state.characters = state.characters.filter(x => x.id !== c.id);
+    state.activeId = state.characters[0] ? state.characters[0].id : null;
+    if (state.mode === 'local') persistLocal();
+    renderAll();
+  }
+  else if (action === 'export-char' && c){ downloadJSON(c, slug(c.name) + '.json'); }
+  else if (action === 'export-all'){ downloadJSON(state.characters, 'grimoire-personnages.json'); }
+  else if (action === 'trigger-import'){ document.getElementById('file-input').click(); }
+  else if (action === 'pick-folder'){ pickFolder().then(renderAll); }
+  else if (action === 'unlink-folder'){ unlinkFolder(); }
+  else if (action === 'reconnect-folder'){ reconnectFolder().then(renderAll); }
+  else if (action === 'dismiss-onboard'){
+    state.onboardDismissed = true;
+    localStorage.setItem('grimoire-onboard-dismissed', '1');
+    renderAll();
+  }
+  else if (action === 'clear-rolls'){ rollLog = []; renderRollLog(); }
+  else if (action === 'add-weapon' && c){ c.weapons.push({ name:'', toHit:'', damage:'', damageBonus:'' }); saveNow(c); renderWeapons(); }
+  else if (action === 'remove-weapon' && c){ c.weapons.splice(Number(btn.dataset.index), 1); saveNow(c); renderWeapons(); }
+  else if (action === 'add-feature' && c){ c.features.push({ title:'', body:'', category:'' }); saveNow(c); renderFeatures(); }
+  else if (action === 'remove-feature' && c){ c.features.splice(Number(btn.dataset.index), 1); saveNow(c); renderFeatures(); }
+  else if (action === 'add-spell' && c){ c.spells.push({ title:'', level:'', time:'', range:'', duration:'', cost:'', damage:'', description:'' }); saveNow(c); renderSpells(); }
+  else if (action === 'remove-spell' && c){ c.spells.splice(Number(btn.dataset.index), 1); saveNow(c); renderSpells(); }
+  else if (action === 'apply-threshold' && c){ c.corruption.threshold = Number(btn.dataset.value); saveNow(c); renderMain(); }
+  else if (action === 'long-rest' && c){
+    c.corruption.temp = 0;
+    c.resources.forEach(r => { if (/long/i.test(r.recharge || '')) r.current = Number(r.max) || 0; });
+    saveNow(c); renderCorruption(); renderResources();
+  }
+  else if (action === 'short-rest' && c){
+    c.resources.forEach(r => { if (/court|short/i.test(r.recharge || '')) r.current = Number(r.max) || 0; });
+    saveNow(c); renderResources();
+  }
+  else if (action === 'toggle-inspiration' && c){
+    c.inspiration = !c.inspiration;
+    saveNow(c); renderMain();
+  }
+  else if (action === 'hp-damage' && c){
+    const amount = Math.max(0, Number(document.getElementById('hp-adjust-amount').value) || 0);
+    let remaining = amount;
+    const temp = Number(c.hp.temp) || 0;
+    const absorbed = Math.min(temp, remaining);
+    c.hp.temp = temp - absorbed;
+    remaining -= absorbed;
+    c.hp.current = Math.max(0, (Number(c.hp.current) || 0) - remaining);
+    saveNow(c); renderMain();
+  }
+  else if (action === 'hp-heal' && c){
+    const amount = Math.max(0, Number(document.getElementById('hp-adjust-amount').value) || 0);
+    c.hp.current = Math.min(Number(c.hp.max) || 0, (Number(c.hp.current) || 0) + amount);
+    saveNow(c); renderMain();
+  }
+  else if (action === 'toggle-death-pip' && c){
+    const kind = btn.dataset.kind, pip = Number(btn.dataset.pip);
+    const cur = Number(c.deathSaves[kind]) || 0;
+    c.deathSaves[kind] = pip < cur ? pip : pip + 1;
+    saveNow(c); renderMain();
+  }
+  else if (action === 'reset-death-saves' && c){
+    c.deathSaves = { success:0, failure:0 };
+    saveNow(c); renderMain();
+  }
+  else if (action === 'adjust-score' && c){
+    const key = btn.dataset.ability;
+    c.abilities[key].score = Math.max(1, (Number(c.abilities[key].score) || 0) + Number(btn.dataset.delta));
+    saveState(); renderAbilities(); renderPassiveRow(); renderSpellcasting();
+  }
+  else if (action === 'add-resource' && c){ c.resources.push({ name:'', max:1, current:1, formula:'', recharge:'' }); saveNow(c); renderResources(); }
+  else if (action === 'remove-resource' && c){ c.resources.splice(Number(btn.dataset.index), 1); saveNow(c); renderResources(); }
+  else if (action === 'reset-resource' && c){
+    const r = c.resources[Number(btn.dataset.index)];
+    r.current = Number(r.max) || 0;
+    saveNow(c); renderResources();
+  }
+  else if (action === 'toggle-pip' && c){
+    const r = c.resources[Number(btn.dataset.index)];
+    const pip = Number(btn.dataset.pip);
+    r.current = pip < (Number(r.current) || 0) ? pip : pip + 1;
+    saveNow(c); renderResources();
+  }
+});
+
+document.body.addEventListener('change', e => {
+  if (e.target.dataset.recomputeOnChange === 'features'){ renderFeatures(); return; }
+  if (e.target.id !== 'file-input') return;
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try{
+      const data = JSON.parse(reader.result);
+      const incoming = Array.isArray(data) ? data : [data];
+      let addedId = null;
+      incoming.forEach(ch => {
+        if (!ch || typeof ch !== 'object') return;
+        const merged = normalizeCharacter(Object.assign(defaultCharacter(ch.name), ch));
+        merged.id = uid();
+        state.characters.push(merged);
+        addedId = merged.id;
+        saveNow(merged);
+      });
+      if (addedId) state.activeId = addedId;
+      if (state.mode === 'local') persistLocal();
+      renderAll();
+    }catch(err){
+      alert("Impossible de lire ce fichier : ce n'est pas un JSON valide de Grimoire.");
+    }
+    e.target.value = '';
+  };
+  reader.readAsText(file);
+});
+
+function downloadJSON(obj, filename){
+  const blob = new Blob([JSON.stringify(obj, null, 2)], { type:'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+/* ---------------------------------------------------------------------
+   Démarrage
+--------------------------------------------------------------------- */
+document.getElementById('char-search').addEventListener('input', renderSidebar);
+
+(async function init(){
+  loadLocal();
+  await tryReconnectFolder();
+  renderAll();
+})();
+</script>
+</body>
+</html>

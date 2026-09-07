@@ -1,0 +1,129 @@
+{
+  "id": "cmtru6yp7ij3au",
+  "name": "Chasseur de Monstres",
+  "classLevel": "Chasseur — Voie du Chasseur de Monstres",
+  "background": "Gens du peuple",
+  "alignment": "",
+  "hp": {
+    "max": 10,
+    "current": 10,
+    "temp": 0
+  },
+  "ac": 15,
+  "speed": 30,
+  "initiative": 3,
+  "inspiration": false,
+  "deathSaves": {
+    "success": 0,
+    "failure": 0
+  },
+  "corruption": {
+    "temp": 0,
+    "perm": 0,
+    "current": 0,
+    "threshold": 4
+  },
+  "proficiencyBonus": 2,
+  "abilities": {
+    "str": {
+      "score": 15,
+      "save": false,
+      "skills": {
+        "athletics": false
+      }
+    },
+    "dex": {
+      "score": 16,
+      "save": false,
+      "skills": {
+        "acrobatics": false,
+        "sleightOfHand": true,
+        "stealth": false
+      }
+    },
+    "con": {
+      "score": 14,
+      "save": false,
+      "skills": {}
+    },
+    "int": {
+      "score": 13,
+      "save": false,
+      "skills": {
+        "arcana": false,
+        "history": false,
+        "investigation": false,
+        "nature": false,
+        "religion": false
+      }
+    },
+    "wis": {
+      "score": 8,
+      "save": false,
+      "skills": {
+        "animalHandling": false,
+        "insight": false,
+        "medicine": false,
+        "perception": false,
+        "survival": false
+      }
+    },
+    "cha": {
+      "score": 10,
+      "save": false,
+      "skills": {
+        "deception": false,
+        "intimidation": false,
+        "performance": false,
+        "persuasion": false
+      }
+    }
+  },
+  "weapons": [
+    {
+      "name": "🤛 Frappe à mains nues",
+      "toHit": "+4",
+      "damage": "1",
+      "damageBonus": "+2"
+    },
+    {
+      "name": "🗡️ Épée courte",
+      "toHit": "+5",
+      "damage": "1d6",
+      "damageBonus": "+3"
+    },
+    {
+      "name": "🏹 Arbalète légère (20 carreaux)",
+      "toHit": "+5",
+      "damage": "1d8",
+      "damageBonus": "+3"
+    }
+  ],
+  "equipment": "Armure de cuir clouté (12 + mod. Dex)\n2 dagues (1d4 perforant) (Finesse, Légère, Lancer 6/18 m)\nÉpée courte (1d6 perforant) (Finesse, Légère)\nArc long (1d8 perforant) (Munitions (portée 45/180 m), Lourde, deux mains)\n20 flèches\n\nUn sac à dos\nUn sac de couchage\nUn nécessaire de cuisine\nUn briquet à silex\n10 torches\n10 jours de rations\nUne outre\n15 mètres (50 pieds) de corde attachée sur le côté du sac",
+  "otherProficiencies": "Armures : armures légères, armures intermédiaires, boucliers.\nArmes : armes courantes, armes de guerre.\nOutils : aucun.\nJets de sauvegarde : Force, Dextérité.\nCompétences : choisir quatre parmi Acrobaties, Athlétisme, Perspicacité, Investigation, Nature, Perception, Discrétion et Survie.\n\nHistorique — Gens du peuple :\n- Compétence (au choix) : Dressage, Athlétisme, Nature ou Survie\n- Outil : un jeu d'outils d'artisan au choix\n- Équipement : vêtements courants et 2d6 + 10 ortegs",
+  "features": [
+    {
+      "title": "🌲 Explorateur des terres sauvages",
+      "category": "Classe",
+      "body": "Récupération de dés de vie : choisissez un nombre de créatures inférieur ou égal à votre bonus de maîtrise pour qu'elles récupèrent un dé de vie supplémentaire (vous pouvez vous inclure).\n\nRavitaillement en nature : passez une heure dans la nature et réussissez un test de Sagesse (Survie) DD 10 pour nourrir votre groupe pendant un jour. Utilisable une fois par repos long (voir la ressource correspondante)."
+    },
+    {
+      "title": "🦣 Chasseur novice",
+      "category": "Sous-classe",
+      "body": "Plus ils sont grands... : vous avez l'avantage sur tous les jets d'attaque contre les cibles de taille Grande ou supérieure.\n\nDoigts agiles : vous obtenez la maîtrise de la compétence Escamotage."
+    }
+  ],
+  "notes": "Reconstitué à partir des notes Obsidian d'origine (ch1 Battle Sheet, Ability Score, Feature Hunter, Feature Monster Hunter, Équipement, Équipement Attaque et Défense, Proficiency). Le score de Sagesse indiqué dans la note d'origine (« -11 (8) ») semble contenir une coquille : le score de 8 donne bien un modificateur de -1, retenu ici.",
+  "isSpellcaster": false,
+  "spellcastingAbility": "int",
+  "spells": [],
+  "resources": [
+    {
+      "name": "🌿 Ravitaillement en nature",
+      "max": 1,
+      "current": 1,
+      "formula": "1",
+      "recharge": "Repos long"
+    }
+  ]
+}

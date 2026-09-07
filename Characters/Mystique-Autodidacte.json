@@ -1,0 +1,167 @@
+{
+  "id": "cmtnwxqsg7wayv",
+  "name": "Mystique Autodidacte",
+  "classLevel": "Mystique — Voie Autodidacte",
+  "background": "Foyer brisé",
+  "alignment": "",
+  "hp": {
+    "max": 8,
+    "current": 8,
+    "temp": 0
+  },
+  "ac": 12,
+  "speed": 30,
+  "initiative": 1,
+  "inspiration": false,
+  "deathSaves": {
+    "success": 0,
+    "failure": 0
+  },
+  "corruption": {
+    "temp": 1,
+    "perm": 0,
+    "current": 1,
+    "threshold": 10
+  },
+  "proficiencyBonus": 2,
+  "abilities": {
+    "str": {
+      "score": 14,
+      "save": false,
+      "skills": {
+        "athletics": false
+      }
+    },
+    "dex": {
+      "score": 13,
+      "save": false,
+      "skills": {
+        "acrobatics": false,
+        "sleightOfHand": false,
+        "stealth": false
+      }
+    },
+    "con": {
+      "score": 11,
+      "save": false,
+      "skills": {}
+    },
+    "int": {
+      "score": 16,
+      "save": false,
+      "skills": {
+        "arcana": false,
+        "history": false,
+        "investigation": false,
+        "nature": false,
+        "religion": false
+      }
+    },
+    "wis": {
+      "score": 14,
+      "save": true,
+      "skills": {
+        "animalHandling": false,
+        "insight": false,
+        "medicine": false,
+        "perception": false,
+        "survival": false
+      }
+    },
+    "cha": {
+      "score": 8,
+      "save": false,
+      "skills": {
+        "deception": false,
+        "intimidation": false,
+        "performance": false,
+        "persuasion": false
+      }
+    }
+  },
+  "weapons": [
+    {
+      "name": "🤛 Frappe à mains nues",
+      "toHit": "+4",
+      "damage": "1",
+      "damageBonus": "+2"
+    },
+    {
+      "name": "🗡️ Dagues (2)",
+      "toHit": "+3",
+      "damage": "1d4",
+      "damageBonus": "+1"
+    },
+    {
+      "name": "🪄 Bâton",
+      "toHit": "+2",
+      "damage": "1d4",
+      "damageBonus": "+2"
+    }
+  ],
+  "equipment": "Armure discrète (11 + mod. Dex)\n2 dagues (1d4 perforant) (Finesse, Légère, Lancer 6/18 m)\nBâton (1d4 contondant)\n\nUn sac à dos\nUn sac de couchage\nUn nécessaire de cuisine\nUn briquet à silex\n10 torches\n10 jours de rations\nUne outre\n15 mètres (50 pieds) de corde attachée sur le côté du sac",
+  "otherProficiencies": "Armures : armures légères.\nArmes : armes courantes.\nOutils : aucun.\nJets de sauvegarde : Sagesse, puis Intelligence ou Charisme au choix.\nCompétences : choisir trois parmi Arcanes, Tromperie, Histoire, Perspicacité, Investigation, Médecine, Persuasion et Religion.\n\nHistorique — Foyer brisé :\n- Compétence (au choix) : Athlétisme, Acrobaties, Histoire ou Nature\n- Outil (au choix) : n'importe quel jeu d'outils\n- Équipement : un nécessaire correspondant à l'outil choisi, des vêtements, et 2d6 + 3 orteg",
+  "features": [
+    {
+      "title": "🔮 Incantation (Mystique)",
+      "category": "Classe",
+      "body": "Seuil de Corruption = (bonus de maîtrise + modificateur de la caractéristique d'incantation) × 2.\nDD de sauvegarde des sorts = 8 + bonus de maîtrise + modificateur de la caractéristique d'incantation.\nModificateur d'attaque de sort = bonus de maîtrise + modificateur de la caractéristique d'incantation."
+    },
+    {
+      "title": "📖 Magie sans limites",
+      "category": "Sous-classe",
+      "body": "Avec votre approche autodidacte, vous pouvez apprendre des sorts de n'importe quelle liste de sorts. Cependant, vous ne connaissez que trois tours de magie et un sort de niveau 1 au niveau 1."
+    },
+    {
+      "title": "🧠 Caractéristique d'incantation",
+      "category": "test",
+      "body": "Les mystiques autodidactes s'appuient sur l'apprentissage puis l'application expérimentale des principes inhérents à la magie. Ils utilisent l'Intelligence comme caractéristique d'incantation. Vous apprenez des sorts de n'importe quelle tradition autre que celle du Théurge."
+    }
+  ],
+  "notes": "Reconstitué à partir des notes Obsidian d'origine (Battle Sheet, Ability Score, Feature Mystic, Feature Self-Taught, Spell, Équipement, Équipement Attaque et Défense, Proficiency).",
+  "isSpellcaster": true,
+  "spellcastingAbility": "int",
+  "spells": [
+    {
+      "title": "🗯️ Moquerie cruelle",
+      "level": "Sort mineur",
+      "time": "1 action",
+      "range": "18 m",
+      "duration": "Instantané",
+      "cost": "1 Corruption",
+      "damage": "1d4",
+      "description": "Vous lancez des insultes magiques à une créature. Si elle rate son jet de sauvegarde, elle subit des dégâts psychiques et obtient un désavantage sur son prochain jet d'attaque avant la fin de son prochain tour.\n\nDégâts selon le niveau : LV1-4 = 1d4, LV5-10 = 2d4, LV11-16 = 3d4, LV17-20 = 4d4."
+    },
+    {
+      "title": "💭 Illusion mineure",
+      "level": "Sort mineur",
+      "time": "1 action",
+      "range": "9 m",
+      "duration": "1 minute",
+      "cost": "1 Corruption",
+      "damage": "",
+      "description": "Vous créez un son ou une image d'un objet (un cube de 1,5 m maximum) dans la portée. Le son peut aller d'un murmure à un cri et provenir d'un point de votre choix. L'image est purement visuelle (pas de son ni de chaleur) et disparaît si elle est touchée ou si une créature utilise son action pour réussir un test d'Intelligence (Investigation) afin de percer l'illusion."
+    },
+    {
+      "title": "☠️ Projection de poison",
+      "level": "Sort mineur",
+      "time": "1 action",
+      "range": "3 m",
+      "duration": "Instantané",
+      "cost": "1 Corruption",
+      "damage": "1d12",
+      "description": "Vous projetez une bouffée de gaz toxique sur une créature à portée. Si elle rate son jet de sauvegarde de Constitution, elle subit des dégâts de poison.\n\nDégâts selon le niveau : LV1-4 = 1d12, LV5-10 = 2d12, LV11-16 = 3d12, LV17-20 = 4d12."
+    },
+    {
+      "title": "😴 Sommeil",
+      "level": "Niveau 1",
+      "time": "1 action",
+      "range": "27 m",
+      "duration": "1 minute",
+      "cost": "1d4+1 Corruption",
+      "damage": "",
+      "description": "Vous lancez 5d8 (et 2d8 de plus par niveau de sort supérieur utilisé). Ce total représente les points de vie (PV) que le sort peut endormir. Les créatures dans un rayon de 6 m autour d'un point choisi sont affectées par ordre croissant de leurs PV actuels. Si le total restant est égal ou inférieur aux PV d'une créature, elle tombe inconsciente."
+    }
+  ],
+  "resources": []
+}

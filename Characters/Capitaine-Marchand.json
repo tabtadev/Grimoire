@@ -1,0 +1,123 @@
+{
+  "id": "cmtns1iek4qwpd",
+  "name": "Capitaine Marchand",
+  "classLevel": "Capitaine / Maître Marchand",
+  "background": "Maison de la Noblesse",
+  "alignment": "",
+  "hp": {
+    "max": 10,
+    "current": 10
+  },
+  "ac": 16,
+  "speed": 30,
+  "initiative": 0,
+  "corruption": {
+    "temp": 0,
+    "perm": 0,
+    "current": 0,
+    "threshold": 6
+  },
+  "proficiencyBonus": 2,
+  "abilities": {
+    "str": {
+      "score": 10,
+      "save": false,
+      "skills": {
+        "athletics": false
+      }
+    },
+    "dex": {
+      "score": 10,
+      "save": false,
+      "skills": {
+        "acrobatics": false,
+        "sleightOfHand": false,
+        "stealth": false
+      }
+    },
+    "con": {
+      "score": 15,
+      "save": true,
+      "skills": {}
+    },
+    "int": {
+      "score": 13,
+      "save": false,
+      "skills": {
+        "arcana": false,
+        "history": false,
+        "investigation": false,
+        "nature": false,
+        "religion": false
+      }
+    },
+    "wis": {
+      "score": 13,
+      "save": false,
+      "skills": {
+        "animalHandling": false,
+        "insight": false,
+        "medicine": false,
+        "perception": false,
+        "survival": false
+      }
+    },
+    "cha": {
+      "score": 15,
+      "save": true,
+      "skills": {
+        "deception": false,
+        "intimidation": false,
+        "performance": false,
+        "persuasion": false
+      }
+    }
+  },
+  "weapons": [
+    {
+      "name": "🤛 Frappe à mains nues",
+      "toHit": "+2",
+      "damage": "1"
+    },
+    {
+      "name": "🗡️ Épée courte",
+      "toHit": "+2",
+      "damage": "1d6"
+    },
+    {
+      "name": "🏹 Arbalète légère (20 carreaux)",
+      "toHit": "+2",
+      "damage": "1d8"
+    },
+    {
+      "name": "🗡️ Hache",
+      "toHit": "",
+      "damage": "1d4"
+    }
+  ],
+  "equipment": "Chemise de mailles (13 + mod. Dex, max 2)\nBouclier (+2 CA)\n20 carreaux d'arbalète\n\nUn sac à dos\nUn sac de couchage\nUn nécessaire de cuisine\nUn briquet à silex\n10 torches\n10 jours de rations\nUne outre\n15 mètres (50 pieds) de corde attachée sur le côté du sac",
+  "otherProficiencies": "Armures : toutes les armures, boucliers.\nArmes : armes courantes, armes de guerre.\nOutils : aucun.\nJets de sauvegarde : Charisme, Constitution.\nCompétences : choisir quatre parmi Dressage, Athlétisme, Tromperie, Histoire, Perspicacité, Intimidation, Perception et Persuasion.\n\nHistorique — Maison de la Noblesse :\n- Compétence (au choix) : Histoire ou Persuasion\n- Outil (au choix) : instruments de calligraphe, jeu, ou instrument de musique\n- Équipement : un nécessaire correspondant à l'outil choisi, un anneau à sceau, de la cire, du papier, et 3d6 + 50 pièces d'argent",
+  "features": [
+    {
+      "title": "🛡️ Style de combat — Défense",
+      "body": "Tant que vous portez une armure, vous gagnez un bonus de +1 à la CA."
+    },
+    {
+      "title": "🎯 Perspicacité tactique",
+      "body": "Quand le combat commence et que vous n'êtes pas surpris, vous pouvez prendre le désavantage sur votre jet d'initiative afin de donner l'avantage sur leurs jets d'initiative à un nombre de créatures égal à votre bonus de maîtrise."
+    },
+    {
+      "title": "💰 Maître Marchand — Évaluation (créature)",
+      "body": "Action requise : dépenser une action (ou une action bonus à partir du niveau 9).\nTest : Sagesse (Perspicacité) DD 10.\nAvantage en cas de succès : un avantage sur votre prochaine attaque ou sur votre prochain jet de caractéristique contesté contre cette cible. L'avantage se consume dès la première réussite.\n\nRecharge : nécessite un repos étendu avant de pouvoir réutiliser cette capacité sur la même créature."
+    },
+    {
+      "title": "📜 Maître Marchand — Évaluation (objet)",
+      "body": "Action requise : dépenser une action (ou une action bonus à partir du niveau 9) tout en pouvant voir et toucher l'objet.\nTest : Intelligence (Investigation) DD 10.\nInformation obtenue en cas de succès : une réponse du MJ au choix parmi l'âge approximatif, la valeur, le créateur probable ou l'usage principal.\n\nRecharge : nécessite un repos étendu avant de pouvoir réutiliser cette capacité sur le même objet.\nMagie : ne détecte pas la magie de manière innée, mais permet de la soupçonner par l'apparence ou l'origine."
+    }
+  ],
+  "notes": "Reconstitué à partir des notes Obsidian d'origine (Battle Sheet, Ability Score, Feature Captain, Feature Merchant Master, Équipement, Équipement Attaque et Défense, Proficiency).",
+  "isSpellcaster": false,
+  "spellcastingAbility": "int",
+  "spells": [],
+  "resources": []
+}
