@@ -120,11 +120,14 @@
   .inspiration-btn{ font-size:18px; line-height:1; padding:7px 10px; }
   .inspiration-btn.active{ border-color:var(--gold); color:var(--gold); background:#2a2210; }
 
-  .passive-row{ display:flex; gap:10px; margin:-4px 0 14px; }
+  .passive-row{ display:flex; gap:10px; margin:-4px 0 14px; position:relative; padding-top:6px; }
   .passive-box{ flex:1; background:var(--surface); border:1px solid var(--border); border-radius:6px;
     padding:8px 10px; text-align:center; }
   .passive-box .pv{ font-family:'Spectral',serif; font-size:17px; font-weight:700; }
   .passive-box .pl{ font-size:10px; color:var(--text-muted); }
+  .passive-box{ position:relative; }
+  .passive-box .pv-input{ width:72px; text-align:center; font-family:'Spectral',serif; font-size:17px; font-weight:700; background:transparent; border:none; padding:0; }
+  .passive-reset{ position:absolute; top:-10px; right:0; font-size:10px; padding:3px 7px; }
 
   .score-stepper{ width:24px; height:24px; padding:0; font-size:14px; line-height:1; border-radius:4px; }
 
@@ -161,7 +164,7 @@
   .feature-top input.feature-title{ flex:1; font-family:'Spectral',serif; font-size:16px; font-weight:600; background:transparent;
     border:none; padding:2px 0; }
   .feature-cat{ width:120px; flex:none; font-size:11px; padding:5px 7px; }
-  .feature textarea{ width:100%; min-height:70px; }
+  .feature textarea{ width:100%; min-height:120px; }
   .feature-group-title{ font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--text-muted);
     margin:16px 0 8px; }
   .feature-group-title:first-child{ margin-top:0; }
@@ -169,6 +172,7 @@
   .spell-meta{ display:grid; grid-template-columns:repeat(5,1fr); gap:6px; margin-bottom:8px; }
   .spell-meta input{ font-size:11px; padding:5px 6px; width:100%; min-width:0; }
   .spell-damage-row{ display:flex; gap:6px; align-items:center; margin-bottom:8px; }
+  #spells-container textarea{ min-height:150px; }
   .spell-damage-row input{ flex:1; min-width:0; }
   .spell-stat-value{ font-family:'Spectral',serif; font-size:18px; font-weight:700; }
   .spell-ability-select{ width:100%; text-align:center; background:transparent; border:none;
@@ -186,7 +190,7 @@
   .resource-row input[type=number]{ width:56px; }
   .resource-row input:not([type=number]){ flex:1; min-width:120px; }
 
-  textarea.freeform{ width:100%; min-height:90px; }
+  textarea.freeform{ width:100%; min-height:150px; }
   .add-link{ font-size:13px; color:var(--brass); background:none; border:none; padding:0; }
   .add-link:hover{ text-decoration:underline; }
 
@@ -211,6 +215,8 @@
   .roll-log-head button{ padding:2px 8px; font-size:11px; }
   .roll-entry{ background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:8px 10px;
     display:flex; align-items:center; gap:10px; animation:rollin .15s ease-out; }
+  .roll-entry.latest{ border-color:var(--gold); box-shadow:0 0 0 2px rgba(224,201,135,.16), 0 4px 18px rgba(0,0,0,.18); }
+  .latest-badge{ display:inline-block; margin-left:6px; padding:2px 5px; border:1px solid var(--gold); border-radius:3px; color:var(--gold); font-size:9px; font-weight:600; letter-spacing:.03em; vertical-align:1px; }
   .roll-entry.crit{ border-color:var(--gold); }
   .roll-entry.fumble{ border-color:var(--accent); }
   @keyframes rollin{ from{ transform:translateY(6px); opacity:0; } to{ transform:translateY(0); opacity:1; } }
@@ -220,6 +226,33 @@
   .rl-total{ font-family:'Spectral',serif; font-size:20px; font-weight:700; flex:none; }
   .roll-entry.crit .rl-total{ color:var(--gold); }
   .roll-entry.fumble .rl-total{ color:var(--accent); }
+  .spell-reminder{ position:fixed; left:50%; bottom:18px; transform:translate(-50%, 12px); z-index:120;
+    background:var(--surface); border:1px solid var(--brass); color:var(--text); border-radius:6px;
+    padding:9px 14px; font-size:12px; box-shadow:0 8px 28px rgba(0,0,0,.35); opacity:0; pointer-events:none;
+    transition:opacity .18s ease, transform .18s ease; }
+  .spell-reminder.show{ opacity:1; transform:translate(-50%, 0); }
+  .dice-panel{ position:fixed; top:68px; right:28px; z-index:130; width:390px; max-width:calc(100vw - 32px); background:var(--surface); border:1px solid var(--brass); border-radius:8px; box-shadow:0 12px 36px rgba(0,0,0,.45); padding:14px; display:none; }
+  .dice-panel.show{ display:block; }
+  .dice-panel-head{ display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:10px; }
+  .dice-panel-title{ font-family:'Spectral',serif; font-size:17px; font-weight:600; color:var(--gold); }
+  .dice-row{ display:grid; grid-template-columns:62px 1fr 34px; gap:7px; align-items:center; margin-bottom:7px; }
+  .dice-row input,.dice-row select{ width:100%; }
+  .dice-row .remove-dice{ padding:5px 7px; }
+  .dice-actions{ display:flex; gap:7px; margin-top:10px; }
+  .dice-actions button{ flex:1; }
+  .dice-result{ margin-top:12px; padding-top:10px; border-top:1px solid var(--border); }
+  .dice-result-group{ font-size:12px; margin-bottom:4px; }
+  .dice-result-total{ margin-top:8px; font-family:'Spectral',serif; font-size:22px; font-weight:700; color:var(--gold); }
+  .avatar-picker{ position:relative; flex:none; }
+  .avatar-picker summary{ list-style:none; cursor:pointer; }
+  .avatar-picker summary::-webkit-details-marker{ display:none; }
+  .avatar-picker .emoji-grid{ top:110%; left:0; right:auto; }
+  .sheet-actions .avatar-picker{ position:relative; flex:none; }
+  .sheet-actions .avatar-picker summary.avatar-edit-btn{ width:34px; height:34px; box-sizing:border-box; border:1px solid var(--border); border-radius:4px; background:var(--surface-2); display:flex; align-items:center; justify-content:center; font-size:15px; line-height:1; color:var(--text); }
+  .sheet-actions .avatar-picker summary.avatar-edit-btn:hover, .sheet-actions .avatar-picker[open] summary.avatar-edit-btn{ border-color:var(--brass); color:var(--brass); }
+  .avatar-opt{ background:none; border:none; padding:5px; font-size:17px; border-radius:4px; }
+  .avatar-opt:hover{ background:var(--bg); }
+  .avatar-none{ font-size:11px; color:var(--text-muted); padding:5px; }
 
   /* ---------- Onboarding & save status ---------- */
   .onboard-banner{ display:flex; justify-content:space-between; align-items:center; gap:20px;
@@ -228,6 +261,14 @@
   .onboard-actions{ display:flex; gap:8px; flex:none; }
   #save-status{ display:block; font-size:11px; color:var(--text-muted); margin:-4px 0 16px; min-height:14px; }
   #save-status.pending{ color:var(--brass); }
+  .folder-required{ padding:10px 4px 2px; text-align:center; }
+  .folder-required strong{ display:block; font-family:'Spectral',serif; font-size:14px; margin-bottom:6px; }
+  .folder-required .hint{ margin-bottom:10px; }
+  .folder-gate{ max-width:620px; margin:12vh auto 0; padding:42px; text-align:center; background:var(--surface); border:1px solid var(--brass); border-radius:10px; box-shadow:0 18px 60px rgba(0,0,0,.25); }
+  .folder-gate-icon{ font-size:42px; margin-bottom:12px; }
+  .folder-gate h2{ margin:0 0 10px; font-family:'Spectral',serif; }
+  .folder-gate p{ color:var(--text-muted); line-height:1.6; max-width:520px; margin:0 auto 20px; }
+  .folder-gate button{ margin:0 4px; }
 </style>
 </head>
 <body>
@@ -258,6 +299,12 @@
   <div id="roll-log-entries"></div>
 </div>
 
+<div id="dice-panel" class="dice-panel">
+  <div class="dice-panel-head"><div class="dice-panel-title">🎲 <span id="dice-panel-title">Lanceur de dés</span></div><button class="ghost" data-action="toggle-dice-panel">✕</button></div>
+  <div id="dice-rows"></div>
+  <div class="dice-actions"><button type="button" data-action="add-dice">+ Ajouter un dé</button><button type="button" class="primary" data-action="roll-custom-dice">Lancer</button></div>
+  <div id="dice-result" class="dice-result"></div>
+</div>
 <script>
 /* ---------------------------------------------------------------------
    Données de référence
@@ -286,17 +333,18 @@ const I18N = {
     languageButton:'EN', languageTitle:'Passer en anglais',
     subtitle:'Vos fiches de personnage, en local', search:'🔎 Rechercher un personnage...',
     empty:'Aucun personnage.', emptyFolder:'Aucun personnage dans ce dossier.', noResults:q => `Aucun résultat pour « ${q} ».`,
-    clickNew:'Cliquez sur « + Nouveau ».', noSelection:'Aucune fiche sélectionnée', noSelectionText:'Créez un nouveau personnage, importez un JSON, ou liez le dossier où se trouvent déjà vos fiches.',
-    newCharacter:'Nouveau personnage', duplicate:'Dupliquer', export:'Exporter', delete:'Supprimer', import:'Importer', exportAll:'Exporter tout',
-    change:'Changer', local:'Local', linkFolder:'📁 Lier un dossier', authorize:'Autoriser l’accès', chooseFolder:'Choisir ce dossier', noThanks:'Non merci',
+    clickNew:'Cliquez sur « + Nouveau ».', noCharactersInFolder:'Créez un personnage avec « + Nouveau » ou importez une fiche JSON.', noSelection:'Aucune fiche sélectionnée', noSelectionText:'Créez un personnage avec « + Nouveau » ou importez une fiche JSON.',
+    newCharacter:'Nouveau personnage', duplicate:'Dupliquer', export:'Exporter', delete:'Supprimer', import:'Importer', exportAll:'Exporter tout', passiveReset:'Réinitialiser selon les stats', passivePerception:'Perception passive', passiveInvestigation:'Investigation passive', passiveInsight:'Perspicacité passive', diceRoller:'Lanceur de dés', addDice:'Ajouter un dé', rollDice:'Lancer', diceTotal:'Total', diceCount:'Nombre', diceSides:'Dé', noDice:'Ajoutez au moins un type de dé.', avatarChoose:'Choisir un avatar', avatarNone:'Aucune icône', resetCorruptionResources:'Réinitialiser corruption et ressources',
+    change:'Changer', unlink:'Délier', local:'Local', linkFolder:'📁 Lier un dossier', authorize:'Choisir et autoriser', chooseFolder:'Choisir et autoriser le dossier', chooseAnotherFolder:'Choisir et autoriser un dossier', newCharacterShort:'Nouveau', noThanks:'Non merci',
+    folderRequiredTitle:'Choisissez d’abord un dossier', folderRequiredText:'Grimoire utilise directement un dossier de votre ordinateur pour lire, créer et sauvegarder vos fiches. Choisissez-le pour commencer.', folderUnsupportedRequired:'Votre navigateur ne permet pas l’accès aux dossiers locaux. Ouvrez Grimoire dans Chrome ou Edge.', folderPermissionTitle:'Choisissez votre dossier', folderPermissionText:'Pour continuer, choisissez le dossier que Grimoire doit utiliser. L’accès sera accordé au même moment.', folderNeedsPermission:'Choisissez à nouveau le dossier de Grimoire.',
     folderHint:'Chaque personnage est sauvegardé automatiquement dans ce dossier, sous forme de fichier .json.',
     localHint:'Tout reste dans ce navigateur. Exportez en JSON pour garder une copie, ou liez un dossier (Chrome/Edge) pour une sauvegarde automatique sur disque.',
     onboardTitle:'📁 Faire de Grimoire un dossier autonome ?',
     onboardText:'Choisissez le dossier où se trouve ce fichier Grimoire.html : l’app y lira et y sauvegardera vos personnages toute seule, à chaque ouverture.',
     combat:'Combat', maxHp:'PV max', currentHp:'PV actuels', tempHp:'PV temp.', ac:'CA', speed:'Vitesse', initiative:'Initiative', proficiency:'Bonus maîtrise', amount:'Montant', damage:'Dégâts', heal:'Soin',
     damageHint:'Les dégâts consomment d’abord les PV temporaires.', deathSaves:'Jets de sauvegarde contre la mort :', successes:'Réussites', failures:'Échecs', reset:'Réinitialiser',
-    resources:'Ressources', shortRest:'☀️ Repos court', longRest:'🌙 Repos long', newResource:'+ nouvelle ressource', shortRestTitle:"Réinitialise les ressources en 'Repos court'", longRestTitle:"Réinitialise la corruption temporaire et les ressources en 'Repos long'",
-    corruption:'Corruption', corruptionHint:'La corruption temporaire se réinitialise via le Repos long (section Ressources ci-dessus).', temporary:'Temporaire', permanent:'Permanente', current:'Actuelle', threshold:'Seuil',
+    resources:'Ressources', shortRest:'☀️ Repos court', longRest:'🌙 Réinitialiser corruption et ressources', newResource:'+ nouvelle ressource', shortRestTitle:"Réinitialise les ressources en 'Repos court'", longRestTitle:"Réinitialise la corruption temporaire et les ressources en 'Repos long'",
+    corruption:'Corruption', corruptionHint:'La corruption temporaire se réinitialise avec le bouton de réinitialisation de la section Ressources.', temporary:'Temporaire', permanent:'Permanente', current:'Actuelle', threshold:'Seuil',
     abilities:'Caractéristiques', abilitiesHint:'clic = jet · Maj = avantage · Alt = désavantage', score:'Score', savingThrow:'Jet de sauvegarde',
     weapons:'Armes', addWeapon:'+ ajouter une arme', name:'Nom', toHit:'Au toucher', damageBonus:'+ Dégâts', roll:'Jet',
     equipment:'Équipement', equipmentPlaceholder:'Une chose par ligne...', otherProficiencies:'Autres maîtrises', otherPlaceholder:'Armures, armes, outils, langues, jets de sauvegarde, compétences...',
@@ -306,7 +354,7 @@ const I18N = {
     notes:'Notes', notesPlaceholder:'Tout ce qui ne rentre pas ailleurs...',
     noWeapons:'Aucune arme. Cliquez sur « + ajouter une arme ».', noResources:'Aucune ressource à utilisations limitées. Cliquez sur « + nouvelle ressource » (ex. Réaction défensive, Rage, Ki...).',
     resourceName:'Nom (ex. Réaction défensive)', use:'Utiliser', recover:'Récupérer', setMax:'Réglez un maximum ci-dessous pour afficher les jetons.', max:'Max', recharge:'Recharge (ex. Repos long)', formula:'Formule (ex. 2d4 + 2)', rollFormula:'Lancer la formule',
-    recentRolls:'Jets récents', clear:'Effacer', noDamageFormula:'aucune formule de dégâts', invalidFormula:'formule invalide',
+    recentRolls:'Jets récents', lastRoll:'Dernier jet', spellReminder:'N’oublie pas d’ajuster ta Corruption manuellement.', clear:'Effacer', noDamageFormula:'aucune formule de dégâts', invalidFormula:'formule invalide',
     modified:'Modifié — sauvegarde en cours…', savedDisk:'Enregistré sur disque à', saved:'Enregistré à',
     deleteConfirm:name => `Supprimer « ${name} » ? Cette action est irréversible.`, invalidJson:"Impossible de lire ce fichier : ce n'est pas un JSON valide de Grimoire.", folderUnsupported:'Lier un dossier fonctionne dans Chrome ou Edge. Utilisez Importer / Exporter en attendant.',
     ability:{str:'Force',dex:'Dextérité',con:'Constitution',int:'Intelligence',wis:'Sagesse',cha:'Charisme'},
@@ -316,17 +364,18 @@ const I18N = {
     languageButton:'FR', languageTitle:'Passer en français',
     subtitle:'Your character sheets, locally', search:'🔎 Search for a character...',
     empty:'No characters.', emptyFolder:'No characters in this folder.', noResults:q => `No results for “${q}”.`,
-    clickNew:'Click « + New ».', noSelection:'No character selected', noSelectionText:'Create a new character, import a JSON, or link the folder where your existing sheets are stored.',
-    newCharacter:'New character', duplicate:'Duplicate', export:'Export', delete:'Delete', import:'Import', exportAll:'Export all',
-    change:'Change', local:'Local', linkFolder:'📁 Link a folder', authorize:'Allow access', chooseFolder:'Choose this folder', noThanks:'No thanks',
+    clickNew:'Click « + New ».', noCharactersInFolder:'Create a character with « + New » or import a JSON sheet.', noSelection:'No character selected', noSelectionText:'Create a character with « + New » or import a JSON sheet.',
+    newCharacter:'New character', duplicate:'Duplicate', export:'Export', delete:'Delete', import:'Import', exportAll:'Export all', passiveReset:'Reset from stats', passivePerception:'Passive Perception', passiveInvestigation:'Passive Investigation', passiveInsight:'Passive Insight', diceRoller:'Dice roller', addDice:'Add dice', rollDice:'Roll', diceTotal:'Total', diceCount:'Count', diceSides:'Die', noDice:'Add at least one die type.', avatarChoose:'Choose an avatar', avatarNone:'No icon', resetCorruptionResources:'Reset corruption and resources',
+    change:'Change', unlink:'Unlink', local:'Local', linkFolder:'📁 Link a folder', authorize:'Choose and allow access', chooseFolder:'Choose and allow access', chooseAnotherFolder:'Choose and allow access', newCharacterShort:'New', noThanks:'No thanks',
+    folderRequiredTitle:'Choose a folder first', folderRequiredText:'Grimoire uses a folder on your computer to read, create, and save your character sheets. Choose one to begin.', folderUnsupportedRequired:'Your browser does not allow local folder access. Open Grimoire in Chrome or Edge.', folderPermissionTitle:'Choose your folder', folderPermissionText:'To continue, choose the folder Grimoire should use. Access will be granted at the same time.', folderNeedsPermission:'Choose the Grimoire folder again.',
     folderHint:'Each character is automatically saved in this folder as a .json file.',
     localHint:'Everything stays in this browser. Export JSON to keep a copy, or link a folder (Chrome/Edge) for automatic disk backups.',
     onboardTitle:'📁 Make Grimoire a standalone folder?',
     onboardText:'Choose the folder containing this Grimoire.html file: the app will read and save your characters there automatically each time it opens.',
     combat:'Combat', maxHp:'Max HP', currentHp:'Current HP', tempHp:'Temp. HP', ac:'AC', speed:'Speed', initiative:'Initiative', proficiency:'Proficiency bonus', amount:'Amount', damage:'Damage', heal:'Heal',
     damageHint:'Damage is applied to temporary HP first.', deathSaves:'Death saving throws:', successes:'Successes', failures:'Failures', reset:'Reset',
-    resources:'Resources', shortRest:'☀️ Short rest', longRest:'🌙 Long rest', newResource:'+ new resource', shortRestTitle:"Resets resources on 'Short rest'", longRestTitle:"Resets temporary corruption and resources on 'Long rest'",
-    corruption:'Corruption', corruptionHint:'Temporary corruption resets via Long rest (see Resources above).', temporary:'Temporary', permanent:'Permanent', current:'Current', threshold:'Threshold',
+    resources:'Resources', shortRest:'☀️ Short rest', longRest:'🌙 Reset corruption and resources', newResource:'+ new resource', shortRestTitle:"Resets resources on 'Short rest'", longRestTitle:"Resets temporary corruption and resources on 'Long rest'",
+    corruption:'Corruption', corruptionHint:'Temporary corruption resets with the reset button in the Resources section.', temporary:'Temporary', permanent:'Permanent', current:'Current', threshold:'Threshold',
     abilities:'Abilities', abilitiesHint:'click = roll · Shift = advantage · Alt = disadvantage', score:'Score', savingThrow:'Saving throw',
     weapons:'Weapons', addWeapon:'+ add weapon', name:'Name', toHit:'To hit', damageBonus:'+ Damage', roll:'Roll',
     equipment:'Equipment', equipmentPlaceholder:'One item per line...', otherProficiencies:'Other proficiencies', otherPlaceholder:'Armor, weapons, tools, languages, saving throws, skills...',
@@ -336,7 +385,7 @@ const I18N = {
     notes:'Notes', notesPlaceholder:'Anything that does not fit elsewhere...',
     noWeapons:'No weapons. Click « + add weapon ».', noResources:'No limited-use resources. Click « + new resource » (e.g. Defensive reaction, Rage, Ki...).',
     resourceName:'Name (e.g. Defensive reaction)', use:'Use', recover:'Recover', setMax:'Set a maximum below to display the tokens.', max:'Max', recharge:'Recharge (e.g. Long rest)', formula:'Formula (e.g. 2d4 + 2)', rollFormula:'Roll formula',
-    recentRolls:'Recent rolls', clear:'Clear', noDamageFormula:'no damage formula', invalidFormula:'invalid formula',
+    recentRolls:'Recent rolls', lastRoll:'Last roll', spellReminder:'Remember to adjust your Corruption manually.', clear:'Clear', noDamageFormula:'no damage formula', invalidFormula:'invalid formula',
     modified:'Modified — saving…', savedDisk:'Saved to disk at', saved:'Saved at',
     deleteConfirm:name => `Delete “${name}”? This action cannot be undone.`, invalidJson:"Unable to read this file: it is not a valid Grimoire JSON file.", folderUnsupported:'Folder linking works in Chrome or Edge. Use Import / Export for now.',
     ability:{str:'Strength',dex:'Dexterity',con:'Constitution',int:'Intelligence',wis:'Wisdom',cha:'Charisma'},
@@ -360,6 +409,8 @@ function setLanguage(lang){
   document.documentElement.lang = currentLanguage;
   renderAll();
   updateLanguageButton();
+  const dicePanel = document.getElementById('dice-panel');
+  if (dicePanel && dicePanel.classList.contains('show')) renderDicePanel();
 }
 function toggleLanguage(){ setLanguage(currentLanguage === 'fr' ? 'en' : 'fr'); }
 function updateLanguageButton(){
@@ -373,21 +424,21 @@ function updateLanguageButton(){
 const UI_TEXT_PAIRS = [
   ['Vos fiches de personnage, en local','Your character sheets, locally'],['🔎 Rechercher un personnage...','🔎 Search for a character...'],
   ['Aucune fiche sélectionnée','No character selected'],['Créez un nouveau personnage, importez un JSON, ou liez le dossier où se trouvent déjà vos fiches.','Create a new character, import a JSON, or link the folder where your existing sheets are stored.'],
-  ['Dupliquer','Duplicate'],['Exporter','Export'],['Supprimer','Delete'],['Importer','Import'],['Exporter tout','Export all'],['Changer','Change'],['Local','Local'],['📁 Lier un dossier','📁 Link a folder'],['Autoriser l’accès','Allow access'],['Choisir ce dossier','Choose this folder'],['Non merci','No thanks'],
+  ['Dupliquer','Duplicate'],['Exporter','Export'],['Supprimer','Delete'],['Importer','Import'],['Exporter tout','Export all'],['Changer','Change'],['Local','Local'],['📁 Lier un dossier','📁 Link a folder'],['Autoriser l’accès','Choose and allow access'],['Choisir ce dossier','Choose and allow access'],['Non merci','No thanks'],
   ['Chaque personnage est sauvegardé automatiquement dans ce dossier, sous forme de fichier .json.','Each character is automatically saved in this folder as a .json file.'],['Tout reste dans ce navigateur. Exportez en JSON pour garder une copie, ou liez un dossier (Chrome/Edge) pour une sauvegarde automatique sur disque.','Everything stays in this browser. Export JSON to keep a copy, or link a folder (Chrome/Edge) for automatic disk backups.'],
   ['📁 Faire de Grimoire un dossier autonome ?','📁 Make Grimoire a standalone folder?'],['Choisissez le dossier où se trouve ce fichier Grimoire.html : l\'app y lira et y sauvegardera vos personnages toute seule, à chaque ouverture.','Choose the folder containing this Grimoire.html file: the app will read and save your characters there automatically each time it opens.'],
   ['Combat','Combat'],['PV max','Max HP'],['PV actuels','Current HP'],['PV temp.','Temp. HP'],['Vitesse','Speed'],['Bonus maîtrise','Proficiency bonus'],['Montant','Amount'],['Dégâts','Damage'],['Soin','Heal'],['Les dégâts consomment d’abord les PV temporaires.','Damage is applied to temporary HP first.'],['Jets de sauvegarde contre la mort :','Death saving throws:'],['Réussites','Successes'],['Échecs','Failures'],['Réinitialiser','Reset'],
-  ['Ressources','Resources'],['☀️ Repos court','☀️ Short rest'],['🌙 Repos long','🌙 Long rest'],['+ nouvelle ressource','+ new resource'],['Corruption','Corruption'],['La corruption temporaire se réinitialise via le Repos long (section Ressources ci-dessus).','Temporary corruption resets via Long rest (see Resources above).'],['Temporaire','Temporary'],['Permanente','Permanent'],['Actuelle','Current'],['Seuil','Threshold'],
+  ['Ressources','Resources'],['🌙 Réinitialiser corruption et ressources','🌙 Reset corruption and resources'],['+ nouvelle ressource','+ new resource'],['Corruption','Corruption'],['La corruption temporaire se réinitialise avec le bouton de réinitialisation de la section Ressources.','Temporary corruption resets with the reset button in the Resources section.'],['Temporaire','Temporary'],['Permanente','Permanent'],['Actuelle','Current'],['Seuil','Threshold'],
   ['Caractéristiques','Abilities'],['clic = jet · Maj = avantage · Alt = désavantage','click = roll · Shift = advantage · Alt = disadvantage'],['Score','Score'],['Jet de sauvegarde','Saving throw'],
   ['Armes','Weapons'],['+ ajouter une arme','+ add weapon'],['Nom','Name'],['Au toucher','To hit'],['+ Dégâts','+ Damage'],['Jet','Roll'],['Équipement','Equipment'],['Une chose par ligne...','One item per line...'],['Autres maîtrises','Other proficiencies'],['Armures, armes, outils, langues, jets de sauvegarde, compétences...','Armor, weapons, tools, languages, saving throws, skills...'],
   ['🔮 Incantation','🔮 Spellcasting'],['Ce personnage lance des sorts','This character casts spells'],['Caractéristique','Ability'],['DD de sauvegarde','Save DC'],['Attaque de sort','Spell attack'],['Seuil corruption (calc.)','Corruption threshold (calc.)'],['↳ Appliquer ce seuil à la Corruption','↳ Apply this threshold to Corruption'],['Cochez la case ci-dessus pour afficher les statistiques d’incantation et la liste de sorts.','Check the box above to display spellcasting stats and the spell list.'],
   ['Sorts','Spells'],['+ nouveau sort','+ new spell'],['Aucun sort. Cliquez sur « + nouveau sort ».','No spells. Click « + new spell ».'],['Nom du sort','Spell name'],['Niveau','Level'],["Temps d'incantation",'Casting time'],['Portée','Range'],['Durée','Duration'],['Coût (Corruption)','Cost (Corruption)'],['Description, effets, mise à l’échelle par niveau...','Description, effects, scaling by level...'],
   ['Capacités','Features'],['+ nouvelle capacité','+ new feature'],['Aucune capacité. Cliquez sur « + nouvelle capacité ».','No features. Click « + new feature ».'],['Nom de la capacité','Feature name'],['Catégorie','Category'],['Description...','Description...'],['Notes','Notes'],['Tout ce qui ne rentre pas ailleurs...','Anything that does not fit elsewhere...'],
-  ['Jets récents','Recent rolls'],['Effacer','Clear'],['Réglez un maximum ci-dessous pour afficher les jetons.','Set a maximum below to display the tokens.'],['Max','Max'],['Utiliser','Use'],['Récupérer','Recover'],['Lancer la formule','Roll formula'],['Aucune arme. Cliquez sur « + ajouter une arme ».','No weapons. Click « + add weapon ».'],['Aucune ressource à utilisations limitées. Cliquez sur « + nouvelle ressource » (ex. Réaction défensive, Rage, Ki...).','No limited-use resources. Click « + new resource » (e.g. Defensive reaction, Rage, Ki...).'],
+  ['Jets récents','Recent rolls'],['Effacer','Clear'],['Réinitialiser selon les stats','Reset from stats'],['Perception passive','Passive Perception'],['Perspicacité passive','Passive Insight'],['Lanceur de dés','Dice roller'],['Ajouter un dé','Add dice'],['Lancer','Roll'],['Aucune icône','No icon'],['Réglez un maximum ci-dessous pour afficher les jetons.','Set a maximum below to display the tokens.'],['Max','Max'],['Utiliser','Use'],['Récupérer','Recover'],['Lancer la formule','Roll formula'],['Aucune arme. Cliquez sur « + ajouter une arme ».','No weapons. Click « + add weapon ».'],['Aucune ressource à utilisations limitées. Cliquez sur « + nouvelle ressource » (ex. Réaction défensive, Rage, Ki...).','No limited-use resources. Click « + new resource » (e.g. Defensive reaction, Rage, Ki...).'],
   ['Nom (ex. Réaction défensive)','Name (e.g. Defensive reaction)'],['Recharge (ex. Repos long)','Recharge (e.g. Long rest)'],['Formule (ex. 2d4 + 2)','Formula (e.g. 2d4 + 2)'],['Dégâts (ex. 1d4) — laisser vide si aucun','Damage (e.g. 1d4) — leave blank if none'],
   ['Force','Strength'],['Dextérité','Dexterity'],['Constitution','Constitution'],['Intelligence','Intelligence'],['Sagesse','Wisdom'],['Charisme','Charisma'],['Athlétisme','Athletics'],['Acrobaties','Acrobatics'],['Escamotage','Sleight of Hand'],['Discrétion','Stealth'],['Arcanes','Arcana'],['Histoire','History'],['Investigation','Investigation'],['Nature','Nature'],['Religion','Religion'],['Dressage','Animal Handling'],['Perspicacité','Insight'],['Médecine','Medicine'],['Perception','Perception'],['Survie','Survival'],['Tromperie','Deception'],['Intimidation','Intimidation'],['Représentation','Performance'],['Persuasion','Persuasion'],
   ['Score','Score'],['Classe','Class'],['Sous-classe','Subclass'],['Espèce','Species'],['Historique','Background'],['Don','Feat'],['Équipement magique','Magic item'],['Autre','Other'],
-  ['Inspiration','Inspiration'],['Réinitialise les ressources en \'Repos court\'','Resets resources on \'Short rest\''],['Réinitialise la corruption temporaire et les ressources en \'Repos long\'','Resets temporary corruption and resources on \'Long rest\'']
+  ['Délier','Unlink'],['Créez un personnage avec « + Nouveau » ou importez une fiche JSON.','Create a character with « + New » or import a JSON sheet.'],['Choisir un dossier','Choose and allow access'],['Choisir un autre dossier','Choose and allow access'],['Nouveau','New'],['Choisissez d’abord un dossier','Choose a folder first'],['Grimoire utilise directement un dossier de votre ordinateur pour lire, créer et sauvegarder vos fiches. Choisissez-le pour commencer.','Grimoire uses a folder on your computer to read, create, and save your character sheets. Choose one to begin.'],['Votre navigateur ne permet pas l’accès aux dossiers locaux. Ouvrez Grimoire dans Chrome ou Edge.','Your browser does not allow local folder access. Open Grimoire in Chrome or Edge.'],['Autorisation requise','Choose your folder'],['Ce dossier était déjà lié, mais le navigateur demande à nouveau votre autorisation pour y accéder.','To continue, choose the folder Grimoire should use. Access will be granted at the same time.'],['Ce dossier doit être réautorisé.','Choose the Grimoire folder again.'],  ['Inspiration','Inspiration'],['Réinitialise les ressources en \'Repos court\'','Resets resources on \'Short rest\''],['Réinitialise la corruption temporaire et les ressources en \'Repos long\'','Resets temporary corruption and resources on \'Long rest\'']
 ];
 
 function translatePage(){
@@ -481,9 +532,10 @@ const DIR_KEY = 'grimoire-dir-handle';
 let state = {
   characters: [],
   activeId: null,
-  mode: 'local',        // 'local' | 'folder'
+  mode: null,          // null = dossier non sélectionné | 'folder' = dossier prêt
   dirHandle: null,
   fileHandles: {},       // charId -> FileSystemFileHandle
+  fileNames: {},          // charId -> nom réel du fichier .json
   pendingHandle: null,   // stored handle awaiting permission re-grant
   onboardDismissed: localStorage.getItem('grimoire-onboard-dismissed') === '1'
 };
@@ -505,6 +557,8 @@ function defaultCharacter(name){
     classLevel: '', background: '', alignment: '',
     hp: { max:10, current:10, temp:0 }, ac:10, speed:30, initiative:0,
     inspiration: false,
+    avatarEmoji: '',
+    passive: { perception:null, investigation:null, insight:null },
     deathSaves: { success:0, failure:0 },
     corruption: { temp:0, perm:0, current:0, threshold:6 },
     proficiencyBonus: 2,
@@ -577,9 +631,16 @@ async function reconnectFolder(){
 }
 
 function unlinkFolder(){
-  state.mode = 'local'; state.dirHandle = null; state.fileHandles = {}; state.pendingHandle = null;
+  flushPendingSaves();
+  // Grimoire ne repasse plus en mode local : sans dossier, l'application est bloquée.
+  state.mode = null;
+  state.dirHandle = null;
+  state.fileHandles = {};
+  state.fileNames = {};
+  state.pendingHandle = null;
+  state.characters = [];
+  state.activeId = null;
   if (window.idbKeyval) idbKeyval.del(DIR_KEY);
-  loadLocal();
   renderAll();
 }
 
@@ -587,6 +648,7 @@ async function scanFolder(){
   const handle = state.dirHandle;
   const loaded = [];
   state.fileHandles = {};
+  state.fileNames = {};
   for await (const entry of handle.values()){
     if (entry.kind !== 'file' || !entry.name.toLowerCase().endsWith('.json')) continue;
     try{
@@ -599,6 +661,7 @@ async function scanFolder(){
         if (!ch.id) ch.id = uid();
         loaded.push(ch);
         state.fileHandles[ch.id] = entry;
+        state.fileNames[ch.id] = entry.name;
       });
     }catch(e){ console.warn('Fichier ignoré (JSON invalide) :', entry.name); }
   }
@@ -606,14 +669,77 @@ async function scanFolder(){
   state.activeId = loaded[0] ? loaded[0].id : null;
 }
 
+function characterFilename(name){
+  const clean = String(name || 'personnage')
+    .replace(/[<>:"/\\|?*]/g, '-')
+    .replace(/[\x00-\x1F]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .replace(/[. ]+$/g, '') || 'personnage';
+  return `${clean}.json`;
+}
+
+async function uniqueCharacterFilename(desired, charId){
+  if (!state.dirHandle) return desired;
+  const current = state.fileNames[charId];
+  if (current === desired) return desired;
+
+  const lowerDesired = desired.toLowerCase();
+  for (const [id, name] of Object.entries(state.fileNames)){
+    if (id !== charId && name.toLowerCase() === lowerDesired) {
+      const dot = desired.toLowerCase().endsWith('.json') ? desired.length - 5 : desired.length;
+      const base = desired.slice(0, dot);
+      let n = 2;
+      while (true){
+        const candidate = `${base} (${n}).json`;
+        const used = Object.values(state.fileNames).some((v, idx) => v.toLowerCase() === candidate.toLowerCase() && Object.keys(state.fileNames)[idx] !== charId);
+        if (!used) return candidate;
+        n++;
+      }
+    }
+  }
+
+  try{
+    await state.dirHandle.getFileHandle(desired, { create:false });
+    // Existing file that isn't tracked: avoid overwriting it.
+    let n = 2;
+    const dot = desired.toLowerCase().endsWith('.json') ? desired.length - 5 : desired.length;
+    const base = desired.slice(0, dot);
+    while (true){
+      const candidate = `${base} (${n}).json`;
+      try{
+        await state.dirHandle.getFileHandle(candidate, { create:false });
+        n++;
+      }catch(e){ return candidate; }
+    }
+  }catch(e){
+    return desired;
+  }
+}
+
 async function writeCharToDisk(ch){
   if (state.mode !== 'folder' || !state.dirHandle) return;
   try{
     let entry = state.fileHandles[ch.id];
+    const desiredName = characterFilename(ch.name);
+    const currentName = state.fileNames[ch.id];
+
     if (!entry){
-      entry = await state.dirHandle.getFileHandle(`perso-${ch.id}.json`, { create:true });
+      const filename = await uniqueCharacterFilename(desiredName, ch.id);
+      entry = await state.dirHandle.getFileHandle(filename, { create:true });
       state.fileHandles[ch.id] = entry;
+      state.fileNames[ch.id] = filename;
+    } else if (currentName && currentName !== desiredName){
+      const filename = await uniqueCharacterFilename(desiredName, ch.id);
+      if (filename !== currentName){
+        const newEntry = await state.dirHandle.getFileHandle(filename, { create:true });
+        state.fileHandles[ch.id] = newEntry;
+        state.fileNames[ch.id] = filename;
+        try{ await state.dirHandle.removeEntry(currentName); }catch(e){}
+        entry = newEntry;
+      }
     }
+
     const writable = await entry.createWritable();
     await writable.write(JSON.stringify(ch, null, 2));
     await writable.close();
@@ -625,6 +751,7 @@ async function deleteCharFromDisk(ch){
   if (entry){
     try{ await state.dirHandle.removeEntry(entry.name); }catch(e){}
     delete state.fileHandles[ch.id];
+    delete state.fileNames[ch.id];
   }
 }
 
@@ -643,36 +770,25 @@ function setSaveStatus(text, pending){
 
 function saveState(){
   const c = activeChar();
-  if (!c) return;
-  if (state.mode === 'folder'){
-    setSaveStatus(ui('modified'), true);
-    clearTimeout(writeTimers[c.id]);
-    writeTimers[c.id] = setTimeout(async () => {
-      await writeCharToDisk(c);
-      setSaveStatus(ui('savedDisk') + ' ' + nowTime());
-    }, AUTOSAVE_DELAY);
-  } else {
-    setSaveStatus(ui('modified'), true);
-    clearTimeout(writeTimers[c.id]);
-    writeTimers[c.id] = setTimeout(() => {
-      persistLocal();
-      setSaveStatus(ui('saved') + ' ' + nowTime());
-    }, AUTOSAVE_DELAY);
-  }
+  if (!c || state.mode !== 'folder') return;
+  setSaveStatus(ui('modified'), true);
+  clearTimeout(writeTimers[c.id]);
+  writeTimers[c.id] = setTimeout(async () => {
+    await writeCharToDisk(c);
+    setSaveStatus(ui('savedDisk') + ' ' + nowTime());
+  }, AUTOSAVE_DELAY);
 }
 function saveNow(ch){
   clearTimeout(writeTimers[ch.id]);
   if (state.mode === 'folder') writeCharToDisk(ch);
-  else persistLocal();
-  if (ch.id === state.activeId) setSaveStatus(ui('saved') + ' ' + nowTime());
+  if (ch.id === state.activeId) setSaveStatus(ui('savedDisk') + ' ' + nowTime());
 }
 function flushPendingSaves(){
+  if (state.mode !== 'folder') return;
   Object.keys(writeTimers).forEach(id => {
     clearTimeout(writeTimers[id]);
     const ch = state.characters.find(x => x.id === id);
-    if (!ch) return;
-    if (state.mode === 'folder') writeCharToDisk(ch);
-    else persistLocal();
+    if (ch) writeCharToDisk(ch);
   });
 }
 window.addEventListener('beforeunload', flushPendingSaves);
@@ -694,6 +810,9 @@ function normalizeCharacter(ch){
   ch.deathSaves = Object.assign({ success:0, failure:0 }, ch.deathSaves || {});
   ch.corruption = Object.assign({ temp:0, perm:0, current:0, threshold:6 }, ch.corruption || {});
   if (typeof ch.inspiration !== 'boolean') ch.inspiration = false;
+  if (typeof ch.avatarEmoji !== 'string') ch.avatarEmoji = '';
+  ch.passive = Object.assign({ perception:null, investigation:null, insight:null }, ch.passive || {});
+  ['perception','investigation','insight'].forEach(k => { if (ch.passive[k] !== null && ch.passive[k] !== '' && !Number.isFinite(Number(ch.passive[k]))) ch.passive[k] = null; });
   return ch;
 }
 function slug(s){
@@ -749,11 +868,26 @@ function renderRollLog(){
   const wrap = document.getElementById('roll-log');
   const box = document.getElementById('roll-log-entries');
   wrap.classList.toggle('show', rollLog.length > 0);
-  box.innerHTML = rollLog.map(r => `
-    <div class="roll-entry ${r.flag}">
-      <div class="rl-text"><div class="rl-label">${esc(r.label)}</div><div class="rl-detail">${esc(r.detail)}</div></div>
+  box.innerHTML = rollLog.map((r, i) => `
+    <div class="roll-entry ${r.flag} ${i === 0 ? 'latest' : ''}">
+      <div class="rl-text"><div class="rl-label">${esc(r.label)}${i === 0 ? `<span class="latest-badge">${esc(ui('lastRoll'))}</span>` : ''}</div><div class="rl-detail">${esc(r.detail)}</div></div>
       <div class="rl-total">${r.total}</div>
     </div>`).join('');
+}
+
+let spellReminderTimer = null;
+function showSpellReminder(){
+  let el = document.getElementById('spell-reminder');
+  if (!el){
+    el = document.createElement('div');
+    el.id = 'spell-reminder';
+    el.className = 'spell-reminder';
+    document.body.appendChild(el);
+  }
+  el.textContent = ui('spellReminder');
+  el.classList.add('show');
+  clearTimeout(spellReminderTimer);
+  spellReminderTimer = setTimeout(() => el.classList.remove('show'), 3200);
 }
 
 /* ---------------------------------------------------------------------
@@ -770,6 +904,15 @@ function avatarColor(name){
 function renderSidebar(){
   const list = document.getElementById('char-list');
   const search = document.getElementById('char-search');
+
+  if (state.mode !== 'folder'){
+    search.disabled = true;
+    list.innerHTML = '';
+    renderFooter();
+    return;
+  }
+
+  search.disabled = false;
   const query = (search ? search.value : state.searchQuery || '').trim().toLowerCase();
   state.searchQuery = query;
   const visible = query
@@ -777,13 +920,13 @@ function renderSidebar(){
     : state.characters;
 
   if (state.characters.length === 0){
-    list.innerHTML = `<div id="empty-state">Aucun personnage${state.mode==='folder' ? ' dans ce dossier' : ''}.<br>Cliquez sur « + Nouveau ».</div>`;
+    list.innerHTML = `<div id="empty-state">${ui('emptyFolder')}<br>${ui('clickNew')}</div>`;
   } else if (visible.length === 0){
-    list.innerHTML = `<div id="empty-state">Aucun résultat pour « ${esc(query)} ».</div>`;
+    list.innerHTML = `<div id="empty-state">${ui('noResults', query)}</div>`;
   } else {
     list.innerHTML = visible.map(c => `
       <div class="char-item ${c.id === state.activeId ? 'active' : ''}" data-action="select-char" data-id="${c.id}">
-        <div class="char-avatar" style="background:${avatarColor(c.name)};">${esc((c.name || '?').trim().charAt(0).toUpperCase())}</div>
+        <details class="avatar-picker" data-avatar-picker="${c.id}"><summary class="char-avatar" style="background:${avatarColor(c.name)};" title="${esc(ui('avatarChoose'))}">${c.avatarEmoji ? esc(c.avatarEmoji) : esc((c.name || '?').trim().charAt(0).toUpperCase())}</summary><div class="emoji-grid">${EMOJIS.map(em => `<button type="button" class="avatar-opt" data-avatar-emoji="${em}" data-id="${c.id}">${em}</button>`).join('')}<button type="button" class="avatar-opt avatar-none" data-avatar-emoji="" data-id="${c.id}">${esc(ui('avatarNone'))}</button></div></details>
         <div class="char-text">
           <div class="name">${c.inspiration ? '⭐ ' : ''}${esc(c.name || 'Sans nom')}</div>
           <div class="sub">${esc(c.classLevel || '—')}</div>
@@ -798,23 +941,20 @@ function renderFooter(){
   let html = '';
 
   if (state.pendingHandle){
-    html += `<div class="reconnect-banner">🔒 Le dossier « ${esc(state.pendingHandle.name)} » était lié. Ré-autorisez l'accès pour continuer à l'utiliser.
-      <button data-action="reconnect-folder">Autoriser l'accès</button></div>`;
+    html += `<div class="reconnect-banner">🔒 ${ui('folderNeedsPermission')}<button data-action="pick-folder">${ui('authorize')}</button></div>`;
   }
 
   if (state.mode === 'folder'){
     html += `<div class="folder-tag"><span class="dot"></span> ${esc(state.dirHandle.name)}</div>`;
-    html += `<div class="row"><button data-action="pick-folder">Changer</button><button data-action="unlink-folder">Local</button></div>`;
-  } else if (supportsFolderLink()){
-    html += `<div class="row"><button data-action="pick-folder">📁 Lier un dossier</button></div>`;
+    html += `<div class="row"><button data-action="pick-folder">${ui('change')}</button><button data-action="unlink-folder">${ui('unlink')}</button></div>`;
+    html += `<div class="row"><button class="primary" data-action="new-char">+ ${ui('newCharacterShort')}</button><button data-action="trigger-import">${ui('import')}</button></div>`;
+    html += `<div class="row"><button data-action="export-all">${ui('exportAll')}</button></div>`;
+    html += `<div class="hint">${ui('folderHint')}</div>`;
+  } else if (!state.pendingHandle){
+    html += `<div class="folder-required"><strong>${ui('folderRequiredTitle')}</strong><div class="hint">${supportsFolderLink() ? ui('folderRequiredText') : ui('folderUnsupportedRequired')}</div>`;
+    if (supportsFolderLink()) html += `<button class="primary" data-action="pick-folder">📁 ${ui('chooseFolder')}</button>`;
+    html += `</div>`;
   }
-
-  html += `<div class="row"><button class="primary" data-action="new-char">+ Nouveau</button><button data-action="trigger-import">Importer</button></div>`;
-  html += `<div class="row"><button data-action="export-all">Exporter tout</button></div>`;
-
-  html += state.mode === 'folder'
-    ? `<div class="hint">Chaque personnage est sauvegardé automatiquement dans ce dossier, sous forme de fichier .json.</div>`
-    : `<div class="hint">Tout reste dans ce navigateur. Exportez en JSON pour garder une copie, ou liez un dossier (Chrome/Edge) pour une sauvegarde automatique sur disque.</div>`;
 
   footer.innerHTML = html;
 }
@@ -822,27 +962,26 @@ function renderFooter(){
 /* ---------------------------------------------------------------------
    Rendu : contenu principal
 --------------------------------------------------------------------- */
-function onboardingHTML(){
-  if (state.mode === 'folder' || state.onboardDismissed || !supportsFolderLink() || state.pendingHandle) return '';
-  return `<div class="onboard-banner">
-    <div>
-      <strong>📁 Faire de Grimoire un dossier autonome ?</strong>
-      <div class="hint" style="margin-top:4px;">Choisissez le dossier où se trouve ce fichier Grimoire.html : l'app y lira et y sauvegardera vos personnages toute seule, à chaque ouverture.</div>
-    </div>
-    <div class="onboard-actions">
-      <button class="primary" data-action="pick-folder">Choisir ce dossier</button>
-      <button class="ghost" data-action="dismiss-onboard">Non merci</button>
-    </div>
-  </div>`;
+function onboardingHTML(){ return ''; }
+
+function folderGateHTML(){
+  if (state.pendingHandle){
+    return `<div class="folder-gate"><div class="folder-gate-icon">📁</div><h2>${ui('folderPermissionTitle')}</h2><p>${ui('folderPermissionText')}</p><button class="primary" data-action="pick-folder">${ui('authorize')}</button></div>`;
+  }
+  return `<div class="folder-gate"><div class="folder-gate-icon">📁</div><h2>${ui('folderRequiredTitle')}</h2><p>${supportsFolderLink() ? ui('folderRequiredText') : ui('folderUnsupportedRequired')}</p>${supportsFolderLink() ? `<button class="primary" data-action="pick-folder">${ui('chooseFolder')}</button>` : ''}</div>`;
 }
 
 function renderMain(){
   const main = document.getElementById('main');
+  if (state.mode !== 'folder'){
+    main.innerHTML = folderGateHTML();
+    return;
+  }
   const c = activeChar();
-  const banner = onboardingHTML();
+  const banner = '';
   if (!c){
     main.innerHTML = banner + `<div id="no-char"><h2>Aucune fiche sélectionnée</h2>
-      <p>Créez un nouveau personnage, importez un JSON, ou liez le dossier où se trouvent déjà vos fiches.</p></div>`;
+      <p>${ui('noCharactersInFolder')}</p></div>`;
     return;
   }
   main.innerHTML = banner + `
@@ -851,6 +990,8 @@ function renderMain(){
         <input class="name-input" data-path="name" value="${esc(c.name)}" placeholder="Nom du personnage">
         <div class="sheet-actions">
           <button class="inspiration-btn ${c.inspiration ? 'active' : ''}" data-action="toggle-inspiration" title="Inspiration">⭐</button>
+          <details class="avatar-picker"><summary class="avatar-edit-btn" title="${esc(ui('avatarChoose'))}">✎</summary><div class="emoji-grid">${EMOJIS.map(em => `<button type="button" class="avatar-opt" data-avatar-emoji="${em}" data-id="${c.id}">${em}</button>`).join('')}<button type="button" class="avatar-opt avatar-none" data-avatar-emoji="" data-id="${c.id}">${esc(ui('avatarNone'))}</button></div></details>
+          <button class="inspiration-btn" data-action="toggle-dice-panel" title="${esc(ui('diceRoller'))}">🎲</button>
           <button data-action="duplicate-char">Dupliquer</button>
           <button data-action="export-char">Exporter</button>
           <button class="danger" data-action="delete-char">Supprimer</button>
@@ -894,18 +1035,17 @@ function renderMain(){
       </section>
 
       <section class="block">
-        <h2>Ressources <span style="display:flex;gap:8px;">
-          <button class="add-link" data-action="short-rest" title="Réinitialise les ressources en 'Repos court'">☀️ Repos court</button>
-          <button class="add-link" data-action="long-rest" title="Réinitialise la corruption temporaire et les ressources en 'Repos long'">🌙 Repos long</button>
-          <button class="add-link" data-action="add-resource">+ nouvelle ressource</button>
-        </span></h2>
-        <div id="resources-container"></div>
+        <h2>Corruption</h2>
+        <div class="hint" style="margin:-8px 0 12px;">${esc(ui('corruptionHint'))}</div>
+        <div id="corruption-container"></div>
       </section>
 
       <section class="block">
-        <h2>Corruption</h2>
-        <div class="hint" style="margin:-8px 0 12px;">La corruption temporaire se réinitialise via le Repos long (section Ressources ci-dessus).</div>
-        <div id="corruption-container"></div>
+        <h2>Ressources <span style="display:flex;gap:8px;">
+          <button class="add-link" data-action="long-rest" title="${esc(ui('longRestTitle'))}">${esc(ui('longRest'))}</button>
+          <button class="add-link" data-action="add-resource">+ nouvelle ressource</button>
+        </span></h2>
+        <div id="resources-container"></div>
       </section>
 
       <section class="block">
@@ -959,13 +1099,18 @@ function renderPassiveRow(){
   const c = activeChar();
   const el = document.getElementById('passive-row');
   if (!el) return;
-  const passive = (abilityKey, skillKey) => 10 + mod(c.abilities[abilityKey].score) + (c.abilities[abilityKey].skills[skillKey] ? c.proficiencyBonus : 0);
+  const calc = (abilityKey, skillKey) => 10 + mod(c.abilities[abilityKey].score) + (c.abilities[abilityKey].skills[skillKey] ? c.proficiencyBonus : 0);
   const items = [
-    ['Perception passive', passive('wis','perception')],
-    ['Investigation passive', passive('int','investigation')],
-    ['Perspicacité passive', passive('wis','insight')]
+    ['perception', ui('passivePerception'), calc('wis','perception')],
+    ['investigation', ui('passiveInvestigation'), calc('int','investigation')],
+    ['insight', ui('passiveInsight'), calc('wis','insight')]
   ];
-  el.innerHTML = items.map(([label, val]) => `<div class="passive-box"><div class="pv">${val}</div><div class="pl">${label}</div></div>`).join('');
+  el.innerHTML = items.map(([key,label,computed]) => {
+    const override = c.passive[key];
+    const value = override === null || override === '' || override === undefined ? computed : Number(override);
+    return `<div class="passive-box"><input type="number" class="pv-input" data-path="passive.${key}" value="${value}" title="${esc(ui('passiveReset'))}"><div class="pl">${esc(label)}</div></div>`;
+  }).join('');
+  el.insertAdjacentHTML('beforeend', `<button type="button" class="ghost passive-reset" data-action="reset-passives" title="${esc(ui('passiveReset'))}">↺ ${esc(ui('passiveReset'))}</button>`);
 }
 
 function renderCorruption(){
@@ -1223,13 +1368,53 @@ function handleRoll(btn, e){
   } else if (type === 'spell-attack'){
     const sp = c.spells[Number(btn.dataset.index)];
     rollD20(`${sp.title || (currentLanguage === 'fr' ? 'Sort' : 'Spell')} — ${currentLanguage === 'fr' ? 'attaque' : 'attack'}`, spellStats(c).atk, mode);
+    showSpellReminder();
   } else if (type === 'spell-damage'){
     const sp = c.spells[Number(btn.dataset.index)];
     rollDamage(`${sp.title || (currentLanguage === 'fr' ? 'Sort' : 'Spell')} — ${currentLanguage === 'fr' ? 'dégâts' : 'damage'}`, sp.damage);
+    showSpellReminder();
   } else if (type === 'resource'){
     const r = c.resources[Number(btn.dataset.index)];
     rollDamage(`${r.name || (currentLanguage === 'fr' ? 'Ressource' : 'Resource')}`, r.formula);
   }
+}
+
+/* ---------------------------------------------------------------------
+   Lanceur de dés personnalisé
+--------------------------------------------------------------------- */
+let customDiceRows = [{ count:1, sides:20 }];
+function diceRowHTML(row, i){
+  return `<div class="dice-row" data-dice-row="${i}">
+    <input type="number" min="1" max="100" value="${row.count}" data-dice-count="${i}" title="${esc(ui('diceCount'))}">
+    <select data-dice-sides="${i}" title="${esc(ui('diceSides'))}">${[2,4,6,8,10,12,20,100].map(n => `<option value="${n}" ${Number(row.sides)===n?'selected':''}>d${n}</option>`).join('')}</select>
+    <button type="button" class="ghost remove-dice" data-action="remove-dice" data-index="${i}">✕</button>
+  </div>`;
+}
+function renderDicePanel(){
+  const panel=document.getElementById('dice-panel'); if(!panel) return;
+  document.getElementById('dice-panel-title').textContent=ui('diceRoller');
+  document.getElementById('dice-rows').innerHTML=customDiceRows.map(diceRowHTML).join('');
+  document.querySelector('#dice-panel [data-action=add-dice]').textContent='+ '+ui('addDice');
+  document.querySelector('#dice-panel [data-action=roll-custom-dice]').textContent=ui('rollDice');
+}
+function toggleDicePanel(){
+  const panel=document.getElementById('dice-panel'); if(!panel) return;
+  panel.classList.toggle('show');
+  if(panel.classList.contains('show')) renderDicePanel();
+}
+function rollCustomDice(){
+  if(!customDiceRows.length){ alert(ui('noDice')); return; }
+  const groups=[]; let total=0;
+  customDiceRows.forEach(row=>{
+    const count=Math.max(1,Math.min(100,Number(row.count)||1));
+    const sides=Math.max(2,Number(row.sides)||20);
+    const rolls=Array.from({length:count},()=>1+Math.floor(Math.random()*sides));
+    const subtotal=rolls.reduce((a,b)=>a+b,0); total+=subtotal;
+    groups.push(`${count}d${sides}: ${rolls.join(', ')} = ${subtotal}`);
+  });
+  addRollEntry('🎲 '+ui('diceRoller'), groups.join(' · '), total, '');
+  const result=document.getElementById('dice-result');
+  if(result) result.innerHTML=groups.map(g=>`<div class="dice-result-group">${esc(g)}</div>`).join('')+`<div class="dice-result-total">${esc(ui('diceTotal'))}: ${total}</div>`;
 }
 
 /* ---------------------------------------------------------------------
@@ -1251,6 +1436,21 @@ document.body.addEventListener('input', e => {
 });
 
 document.body.addEventListener('click', e => {
+  const avatarBtn = e.target.closest('.avatar-opt');
+  if (avatarBtn){
+    e.stopPropagation();
+    const c = state.characters.find(x => x.id === avatarBtn.dataset.id);
+    if (c){
+      c.avatarEmoji = avatarBtn.dataset.avatarEmoji || '';
+      saveNow(c);
+      renderSidebar();
+      renderMain();
+    }
+    const details = avatarBtn.closest('details');
+    if (details) details.removeAttribute('open');
+    return;
+  }
+
   const emojiBtn = e.target.closest('.emoji-opt');
   if (emojiBtn){
     const c = activeChar();
@@ -1270,6 +1470,12 @@ document.body.addEventListener('click', e => {
     return;
   }
 
+  const avatarPicker = e.target.closest('.avatar-picker');
+  if (avatarPicker){
+    e.stopPropagation();
+    if (!e.target.closest('.avatar-opt')) return;
+  }
+
   const rollBtn = e.target.closest('[data-roll]');
   if (rollBtn){ handleRoll(rollBtn, e); return; }
 
@@ -1280,11 +1486,10 @@ document.body.addEventListener('click', e => {
 
   if (action === 'select-char'){
     state.activeId = btn.dataset.id;
-    if (state.mode === 'local') persistLocal();
     renderAll();
   }
   else if (action === 'new-char'){
-    const nc = defaultCharacter();
+    const nc = defaultCharacter(ui('newCharacter'));
     state.characters.push(nc);
     state.activeId = nc.id;
     saveNow(nc);
@@ -1303,21 +1508,24 @@ document.body.addEventListener('click', e => {
     if (state.mode === 'folder') deleteCharFromDisk(c);
     state.characters = state.characters.filter(x => x.id !== c.id);
     state.activeId = state.characters[0] ? state.characters[0].id : null;
-    if (state.mode === 'local') persistLocal();
     renderAll();
   }
-  else if (action === 'export-char' && c){ downloadJSON(c, slug(c.name) + '.json'); }
-  else if (action === 'export-all'){ downloadJSON(state.characters, 'grimoire-personnages.json'); }
+  else if (action === 'export-char' && c){ downloadJSON(c, characterFilename(c.name)); }
+  else if (action === 'export-all'){ downloadAllCharactersZip(); }
   else if (action === 'trigger-import'){ document.getElementById('file-input').click(); }
   else if (action === 'pick-folder'){ pickFolder().then(renderAll); }
   else if (action === 'unlink-folder'){ unlinkFolder(); }
-  else if (action === 'reconnect-folder'){ reconnectFolder().then(renderAll); }
-  else if (action === 'dismiss-onboard'){
-    state.onboardDismissed = true;
-    localStorage.setItem('grimoire-onboard-dismissed', '1');
-    renderAll();
-  }
+  else if (action === 'reconnect-folder'){ pickFolder().then(renderAll); }
+  else if (action === 'dismiss-onboard'){ /* obsolete */ }
   else if (action === 'clear-rolls'){ rollLog = []; renderRollLog(); }
+  else if (action === 'toggle-dice-panel'){ toggleDicePanel(); }
+  else if (action === 'add-dice'){ customDiceRows.push({ count:1, sides:6 }); renderDicePanel(); }
+  else if (action === 'remove-dice'){ if (customDiceRows.length > 1) customDiceRows.splice(Number(btn.dataset.index), 1); renderDicePanel(); }
+  else if (action === 'roll-custom-dice'){
+    document.querySelectorAll('[data-dice-count]').forEach(el => { customDiceRows[Number(el.dataset.diceCount)].count = Number(el.value) || 1; });
+    document.querySelectorAll('[data-dice-sides]').forEach(el => { customDiceRows[Number(el.dataset.diceSides)].sides = Number(el.value) || 20; });
+    rollCustomDice();
+  }
   else if (action === 'add-weapon' && c){ c.weapons.push({ name:'', toHit:'', damage:'', damageBonus:'' }); saveNow(c); renderWeapons(); }
   else if (action === 'remove-weapon' && c){ c.weapons.splice(Number(btn.dataset.index), 1); saveNow(c); renderWeapons(); }
   else if (action === 'add-feature' && c){ c.features.push({ title:'', body:'', category:'' }); saveNow(c); renderFeatures(); }
@@ -1327,12 +1535,12 @@ document.body.addEventListener('click', e => {
   else if (action === 'apply-threshold' && c){ c.corruption.threshold = Number(btn.dataset.value); saveNow(c); renderMain(); }
   else if (action === 'long-rest' && c){
     c.corruption.temp = 0;
-    c.resources.forEach(r => { if (/long/i.test(r.recharge || '')) r.current = Number(r.max) || 0; });
+    c.resources.forEach(r => { r.current = Number(r.max) || 0; });
     saveNow(c); renderCorruption(); renderResources();
   }
-  else if (action === 'short-rest' && c){
-    c.resources.forEach(r => { if (/court|short/i.test(r.recharge || '')) r.current = Number(r.max) || 0; });
-    saveNow(c); renderResources();
+  else if (action === 'reset-passives' && c){
+    c.passive = { perception:null, investigation:null, insight:null };
+    saveNow(c); renderPassiveRow();
   }
   else if (action === 'toggle-inspiration' && c){
     c.inspiration = !c.inspiration;
@@ -1384,27 +1592,29 @@ document.body.addEventListener('click', e => {
 });
 
 document.body.addEventListener('change', e => {
-  if (e.target.dataset.recomputeOnChange === 'features'){ renderFeatures(); return; }
   if (e.target.id !== 'file-input') return;
   const file = e.target.files[0];
   if (!file) return;
+  if (state.mode !== 'folder' || !state.dirHandle){
+    e.target.value = '';
+    return;
+  }
   const reader = new FileReader();
-  reader.onload = () => {
+  reader.onload = async () => {
     try{
       const data = JSON.parse(reader.result);
       const incoming = Array.isArray(data) ? data : [data];
       let addedId = null;
-      incoming.forEach(ch => {
-        if (!ch || typeof ch !== 'object') return;
+      for (const ch of incoming){
+        if (!ch || typeof ch !== 'object') continue;
         const merged = normalizeCharacter(Object.assign(defaultCharacter(ch.name), ch));
         merged.id = uid();
         state.characters.push(merged);
+        state.activeId = merged.id;
         addedId = merged.id;
-        saveNow(merged);
-      });
-      if (addedId) state.activeId = addedId;
-      if (state.mode === 'local') persistLocal();
-      renderAll();
+        await writeCharToDisk(merged);
+      }
+      if (addedId) renderAll();
     }catch(err){
       alert(ui('invalidJson'));
     }
@@ -1415,11 +1625,97 @@ document.body.addEventListener('change', e => {
 
 function downloadJSON(obj, filename){
   const blob = new Blob([JSON.stringify(obj, null, 2)], { type:'application/json' });
+  downloadBlob(blob, filename);
+}
+
+function downloadBlob(blob, filename){
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url; a.download = filename;
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+/* Exportation de toutes les fiches : un vrai .zip contenant un .json par personnage.
+   Le ZIP est créé directement dans le navigateur, sans dépendance externe. */
+function crc32(bytes){
+  let crc = 0xFFFFFFFF;
+  for (let i = 0; i < bytes.length; i++){
+    crc ^= bytes[i];
+    for (let j = 0; j < 8; j++) crc = (crc >>> 1) ^ (0xEDB88320 & -(crc & 1));
+  }
+  return (crc ^ 0xFFFFFFFF) >>> 0;
+}
+
+function u16(n){ return new Uint8Array([n & 255, (n >>> 8) & 255]); }
+function u32(n){ return new Uint8Array([n & 255, (n >>> 8) & 255, (n >>> 16) & 255, (n >>> 24) & 255]); }
+
+function concatBytes(parts){
+  const total = parts.reduce((n, p) => n + p.length, 0);
+  const out = new Uint8Array(total);
+  let offset = 0;
+  for (const part of parts){ out.set(part, offset); offset += part.length; }
+  return out;
+}
+
+function zipFilename(name, used){
+  const base = characterFilename(name);
+  if (!used.has(base.toLowerCase())){ used.add(base.toLowerCase()); return base; }
+  const dot = base.length - 5;
+  const stem = base.slice(0, dot);
+  let n = 2;
+  while (used.has(`${stem} (${n}).json`.toLowerCase())) n++;
+  const result = `${stem} (${n}).json`;
+  used.add(result.toLowerCase());
+  return result;
+}
+
+async function downloadAllCharactersZip(){
+  if (!state.characters.length){
+    alert(ui('empty'));
+    return;
+  }
+
+  const encoder = new TextEncoder();
+  const localParts = [];
+  const centralParts = [];
+  const usedNames = new Set();
+  let offset = 0;
+
+  for (const ch of state.characters){
+    const filename = zipFilename(ch.name, usedNames);
+    const nameBytes = encoder.encode(filename);
+    const data = encoder.encode(JSON.stringify(ch, null, 2));
+    const crc = crc32(data);
+
+    const localHeader = concatBytes([
+      new Uint8Array([0x50,0x4B,0x03,0x04]),
+      u16(20), u16(0x0800), u16(0), u16(0), u16(0),
+      u32(crc), u32(data.length), u32(data.length),
+      u16(nameBytes.length), u16(0), nameBytes
+    ]);
+    localParts.push(localHeader, data);
+
+    const centralHeader = concatBytes([
+      new Uint8Array([0x50,0x4B,0x01,0x02]),
+      u16(20), u16(20), u16(0x0800), u16(0), u16(0), u16(0),
+      u32(crc), u32(data.length), u32(data.length),
+      u16(nameBytes.length), u16(0), u16(0), u16(0), u16(0),
+      u32(0), u32(offset), nameBytes
+    ]);
+    centralParts.push(centralHeader);
+    offset += localHeader.length + data.length;
+  }
+
+  const centralDirectory = concatBytes(centralParts);
+  const endRecord = concatBytes([
+    new Uint8Array([0x50,0x4B,0x05,0x06]),
+    u16(0), u16(0), u16(state.characters.length), u16(state.characters.length),
+    u32(centralDirectory.length), u32(offset), u16(0)
+  ]);
+
+  const zip = concatBytes([...localParts, centralDirectory, endRecord]);
+  downloadBlob(new Blob([zip], { type:'application/zip' }), 'grimoire-personnages.zip');
 }
 
 /* ---------------------------------------------------------------------
@@ -1432,7 +1728,6 @@ installTranslationObserver();
 updateLanguageButton();
 
 (async function init(){
-  loadLocal();
   await tryReconnectFolder();
   renderAll();
   updateLanguageButton();
