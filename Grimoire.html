@@ -50,8 +50,10 @@
   #sidebar{ width:280px; flex:none; background:var(--surface); border-right:1px solid var(--border);
     display:flex; flex-direction:column; height:100vh; position:sticky; top:0; }
   #sidebar-header{ padding:22px 18px 14px; border-bottom:1px solid var(--border); }
+  .sidebar-title-row{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
   #sidebar-header h1{ margin:0; font-size:22px; font-weight:600; }
   #sidebar-header p{ margin:4px 0 0; font-size:12px; color:var(--text-muted); font-style:italic; }
+  #lang-toggle{ flex:none; padding:5px 8px; font-size:11px; min-width:36px; }
   #char-list{ flex:1; overflow-y:auto; padding:10px; }
   #char-search{ margin:0 10px 4px; width:calc(100% - 20px); font-size:13px; }
   .char-item{ padding:9px 10px; border-radius:5px; margin-bottom:4px; cursor:pointer; border:1px solid transparent;
@@ -232,8 +234,7 @@
 
 <div id="sidebar">
   <div id="sidebar-header">
-    <h1>Grimoire</h1>
-    <p>Vos fiches de personnage, en local</p>
+    <div class="sidebar-title-row"><div><h1>Grimoire</h1><p>Vos fiches de personnage, en local</p></div><button id="lang-toggle" type="button" title="Changer de langue">EN</button></div>
   </div>
   <input id="char-search" type="text" placeholder="🔎 Rechercher un personnage...">
   <div id="char-list"></div>
@@ -273,6 +274,204 @@ const SKILLS = {
 const EMOJIS = ['⚔️','🛡️','🏹','🗡️','🔥','❄️','⚡','☠️','💀','🐉','🧙','🧝','🧛','🧟','🎯','💰','📜','🧪','🔮','✨','🩸','👁️','🤝','🏰','👑','🎭','🐍','🦴','🌙','⭐','🕯️','🗝️'];
 
 /* ---------------------------------------------------------------------
+   Internationalisation — FR / EN
+   Le changement de langue ne modifie jamais les données des personnages.
+--------------------------------------------------------------------- */
+const LANG_KEY = 'grimoire-language';
+let currentLanguage = localStorage.getItem(LANG_KEY) || 'fr';
+if (currentLanguage !== 'fr' && currentLanguage !== 'en') currentLanguage = 'fr';
+
+const I18N = {
+  fr: {
+    languageButton:'EN', languageTitle:'Passer en anglais',
+    subtitle:'Vos fiches de personnage, en local', search:'🔎 Rechercher un personnage...',
+    empty:'Aucun personnage.', emptyFolder:'Aucun personnage dans ce dossier.', noResults:q => `Aucun résultat pour « ${q} ».`,
+    clickNew:'Cliquez sur « + Nouveau ».', noSelection:'Aucune fiche sélectionnée', noSelectionText:'Créez un nouveau personnage, importez un JSON, ou liez le dossier où se trouvent déjà vos fiches.',
+    newCharacter:'Nouveau personnage', duplicate:'Dupliquer', export:'Exporter', delete:'Supprimer', import:'Importer', exportAll:'Exporter tout',
+    change:'Changer', local:'Local', linkFolder:'📁 Lier un dossier', authorize:'Autoriser l’accès', chooseFolder:'Choisir ce dossier', noThanks:'Non merci',
+    folderHint:'Chaque personnage est sauvegardé automatiquement dans ce dossier, sous forme de fichier .json.',
+    localHint:'Tout reste dans ce navigateur. Exportez en JSON pour garder une copie, ou liez un dossier (Chrome/Edge) pour une sauvegarde automatique sur disque.',
+    onboardTitle:'📁 Faire de Grimoire un dossier autonome ?',
+    onboardText:'Choisissez le dossier où se trouve ce fichier Grimoire.html : l’app y lira et y sauvegardera vos personnages toute seule, à chaque ouverture.',
+    combat:'Combat', maxHp:'PV max', currentHp:'PV actuels', tempHp:'PV temp.', ac:'CA', speed:'Vitesse', initiative:'Initiative', proficiency:'Bonus maîtrise', amount:'Montant', damage:'Dégâts', heal:'Soin',
+    damageHint:'Les dégâts consomment d’abord les PV temporaires.', deathSaves:'Jets de sauvegarde contre la mort :', successes:'Réussites', failures:'Échecs', reset:'Réinitialiser',
+    resources:'Ressources', shortRest:'☀️ Repos court', longRest:'🌙 Repos long', newResource:'+ nouvelle ressource', shortRestTitle:"Réinitialise les ressources en 'Repos court'", longRestTitle:"Réinitialise la corruption temporaire et les ressources en 'Repos long'",
+    corruption:'Corruption', corruptionHint:'La corruption temporaire se réinitialise via le Repos long (section Ressources ci-dessus).', temporary:'Temporaire', permanent:'Permanente', current:'Actuelle', threshold:'Seuil',
+    abilities:'Caractéristiques', abilitiesHint:'clic = jet · Maj = avantage · Alt = désavantage', score:'Score', savingThrow:'Jet de sauvegarde',
+    weapons:'Armes', addWeapon:'+ ajouter une arme', name:'Nom', toHit:'Au toucher', damageBonus:'+ Dégâts', roll:'Jet',
+    equipment:'Équipement', equipmentPlaceholder:'Une chose par ligne...', otherProficiencies:'Autres maîtrises', otherPlaceholder:'Armures, armes, outils, langues, jets de sauvegarde, compétences...',
+    spellcasting:'🔮 Incantation', spellcaster:'Ce personnage lance des sorts', spellcastingStat:'Caractéristique', saveDc:'DD de sauvegarde', spellAttack:'Attaque de sort', corruptionCalc:'Seuil corruption (calc.)', applyThreshold:'↳ Appliquer ce seuil à la Corruption', spellHint:'Cochez la case ci-dessus pour afficher les statistiques d’incantation et la liste de sorts.',
+    spells:'Sorts', newSpell:'+ nouveau sort', noSpells:'Aucun sort. Cliquez sur « + nouveau sort ».', spellName:'Nom du sort', level:'Niveau', castingTime:"Temps d'incantation", range:'Portée', duration:'Durée', cost:'Coût (Corruption)', damageExample:'Dégâts (ex. 1d4) — laisser vide si aucun', spellDescription:'Description, effets, mise à l’échelle par niveau...',
+    features:'Capacités', newFeature:'+ nouvelle capacité', noFeatures:'Aucune capacité. Cliquez sur « + nouvelle capacité ».', featureName:'Nom de la capacité', category:'Catégorie', description:'Description...',
+    notes:'Notes', notesPlaceholder:'Tout ce qui ne rentre pas ailleurs...',
+    noWeapons:'Aucune arme. Cliquez sur « + ajouter une arme ».', noResources:'Aucune ressource à utilisations limitées. Cliquez sur « + nouvelle ressource » (ex. Réaction défensive, Rage, Ki...).',
+    resourceName:'Nom (ex. Réaction défensive)', use:'Utiliser', recover:'Récupérer', setMax:'Réglez un maximum ci-dessous pour afficher les jetons.', max:'Max', recharge:'Recharge (ex. Repos long)', formula:'Formule (ex. 2d4 + 2)', rollFormula:'Lancer la formule',
+    recentRolls:'Jets récents', clear:'Effacer', noDamageFormula:'aucune formule de dégâts', invalidFormula:'formule invalide',
+    modified:'Modifié — sauvegarde en cours…', savedDisk:'Enregistré sur disque à', saved:'Enregistré à',
+    deleteConfirm:name => `Supprimer « ${name} » ? Cette action est irréversible.`, invalidJson:"Impossible de lire ce fichier : ce n'est pas un JSON valide de Grimoire.", folderUnsupported:'Lier un dossier fonctionne dans Chrome ou Edge. Utilisez Importer / Exporter en attendant.',
+    ability:{str:'Force',dex:'Dextérité',con:'Constitution',int:'Intelligence',wis:'Sagesse',cha:'Charisme'},
+    skill:{athletics:'Athlétisme',acrobatics:'Acrobaties',sleightOfHand:'Escamotage',stealth:'Discrétion',arcana:'Arcanes',history:'Histoire',investigation:'Investigation',nature:'Nature',religion:'Religion',animalHandling:'Dressage',insight:'Perspicacité',medicine:'Médecine',perception:'Perception',survival:'Survie',deception:'Tromperie',intimidation:'Intimidation',performance:'Représentation',persuasion:'Persuasion'}
+  },
+  en: {
+    languageButton:'FR', languageTitle:'Passer en français',
+    subtitle:'Your character sheets, locally', search:'🔎 Search for a character...',
+    empty:'No characters.', emptyFolder:'No characters in this folder.', noResults:q => `No results for “${q}”.`,
+    clickNew:'Click « + New ».', noSelection:'No character selected', noSelectionText:'Create a new character, import a JSON, or link the folder where your existing sheets are stored.',
+    newCharacter:'New character', duplicate:'Duplicate', export:'Export', delete:'Delete', import:'Import', exportAll:'Export all',
+    change:'Change', local:'Local', linkFolder:'📁 Link a folder', authorize:'Allow access', chooseFolder:'Choose this folder', noThanks:'No thanks',
+    folderHint:'Each character is automatically saved in this folder as a .json file.',
+    localHint:'Everything stays in this browser. Export JSON to keep a copy, or link a folder (Chrome/Edge) for automatic disk backups.',
+    onboardTitle:'📁 Make Grimoire a standalone folder?',
+    onboardText:'Choose the folder containing this Grimoire.html file: the app will read and save your characters there automatically each time it opens.',
+    combat:'Combat', maxHp:'Max HP', currentHp:'Current HP', tempHp:'Temp. HP', ac:'AC', speed:'Speed', initiative:'Initiative', proficiency:'Proficiency bonus', amount:'Amount', damage:'Damage', heal:'Heal',
+    damageHint:'Damage is applied to temporary HP first.', deathSaves:'Death saving throws:', successes:'Successes', failures:'Failures', reset:'Reset',
+    resources:'Resources', shortRest:'☀️ Short rest', longRest:'🌙 Long rest', newResource:'+ new resource', shortRestTitle:"Resets resources on 'Short rest'", longRestTitle:"Resets temporary corruption and resources on 'Long rest'",
+    corruption:'Corruption', corruptionHint:'Temporary corruption resets via Long rest (see Resources above).', temporary:'Temporary', permanent:'Permanent', current:'Current', threshold:'Threshold',
+    abilities:'Abilities', abilitiesHint:'click = roll · Shift = advantage · Alt = disadvantage', score:'Score', savingThrow:'Saving throw',
+    weapons:'Weapons', addWeapon:'+ add weapon', name:'Name', toHit:'To hit', damageBonus:'+ Damage', roll:'Roll',
+    equipment:'Equipment', equipmentPlaceholder:'One item per line...', otherProficiencies:'Other proficiencies', otherPlaceholder:'Armor, weapons, tools, languages, saving throws, skills...',
+    spellcasting:'🔮 Spellcasting', spellcaster:'This character casts spells', spellcastingStat:'Ability', saveDc:'Save DC', spellAttack:'Spell attack', corruptionCalc:'Corruption threshold (calc.)', applyThreshold:'↳ Apply this threshold to Corruption', spellHint:'Check the box above to display spellcasting stats and the spell list.',
+    spells:'Spells', newSpell:'+ new spell', noSpells:'No spells. Click « + new spell ».', spellName:'Spell name', level:'Level', castingTime:'Casting time', range:'Range', duration:'Duration', cost:'Cost (Corruption)', damageExample:'Damage (e.g. 1d4) — leave blank if none', spellDescription:'Description, effects, scaling by level...',
+    features:'Features', newFeature:'+ new feature', noFeatures:'No features. Click « + new feature ».', featureName:'Feature name', category:'Category', description:'Description...',
+    notes:'Notes', notesPlaceholder:'Anything that does not fit elsewhere...',
+    noWeapons:'No weapons. Click « + add weapon ».', noResources:'No limited-use resources. Click « + new resource » (e.g. Defensive reaction, Rage, Ki...).',
+    resourceName:'Name (e.g. Defensive reaction)', use:'Use', recover:'Recover', setMax:'Set a maximum below to display the tokens.', max:'Max', recharge:'Recharge (e.g. Long rest)', formula:'Formula (e.g. 2d4 + 2)', rollFormula:'Roll formula',
+    recentRolls:'Recent rolls', clear:'Clear', noDamageFormula:'no damage formula', invalidFormula:'invalid formula',
+    modified:'Modified — saving…', savedDisk:'Saved to disk at', saved:'Saved at',
+    deleteConfirm:name => `Delete “${name}”? This action cannot be undone.`, invalidJson:"Unable to read this file: it is not a valid Grimoire JSON file.", folderUnsupported:'Folder linking works in Chrome or Edge. Use Import / Export for now.',
+    ability:{str:'Strength',dex:'Dexterity',con:'Constitution',int:'Intelligence',wis:'Wisdom',cha:'Charisma'},
+    skill:{athletics:'Athletics',acrobatics:'Acrobatics',sleightOfHand:'Sleight of Hand',stealth:'Stealth',arcana:'Arcana',history:'History',investigation:'Investigation',nature:'Nature',religion:'Religion',animalHandling:'Animal Handling',insight:'Insight',medicine:'Medicine',perception:'Perception',survival:'Survival',deception:'Deception',intimidation:'Intimidation',performance:'Performance',persuasion:'Persuasion'}
+  }
+};
+
+function ui(key, ...args){
+  const value = I18N[currentLanguage][key];
+  return typeof value === 'function' ? value(...args) : (value ?? key);
+}
+function tAbility(key){ return I18N[currentLanguage].ability[key] || ABILITY_LABELS[key]; }
+function tSkill(key){ return I18N[currentLanguage].skill[key] || key; }
+function setLanguage(lang){
+  if (lang !== 'fr' && lang !== 'en') return;
+  // Force any focused field to commit its latest value before re-rendering.
+  if (document.activeElement && typeof document.activeElement.blur === 'function') document.activeElement.blur();
+  flushPendingSaves();
+  currentLanguage = lang;
+  localStorage.setItem(LANG_KEY, currentLanguage);
+  document.documentElement.lang = currentLanguage;
+  renderAll();
+  updateLanguageButton();
+}
+function toggleLanguage(){ setLanguage(currentLanguage === 'fr' ? 'en' : 'fr'); }
+function updateLanguageButton(){
+  const btn = document.getElementById('lang-toggle');
+  if (!btn) return;
+  btn.textContent = ui('languageButton');
+  btn.title = ui('languageTitle');
+}
+
+// Translate rendered UI without touching user-entered character data.
+const UI_TEXT_PAIRS = [
+  ['Vos fiches de personnage, en local','Your character sheets, locally'],['🔎 Rechercher un personnage...','🔎 Search for a character...'],
+  ['Aucune fiche sélectionnée','No character selected'],['Créez un nouveau personnage, importez un JSON, ou liez le dossier où se trouvent déjà vos fiches.','Create a new character, import a JSON, or link the folder where your existing sheets are stored.'],
+  ['Dupliquer','Duplicate'],['Exporter','Export'],['Supprimer','Delete'],['Importer','Import'],['Exporter tout','Export all'],['Changer','Change'],['Local','Local'],['📁 Lier un dossier','📁 Link a folder'],['Autoriser l’accès','Allow access'],['Choisir ce dossier','Choose this folder'],['Non merci','No thanks'],
+  ['Chaque personnage est sauvegardé automatiquement dans ce dossier, sous forme de fichier .json.','Each character is automatically saved in this folder as a .json file.'],['Tout reste dans ce navigateur. Exportez en JSON pour garder une copie, ou liez un dossier (Chrome/Edge) pour une sauvegarde automatique sur disque.','Everything stays in this browser. Export JSON to keep a copy, or link a folder (Chrome/Edge) for automatic disk backups.'],
+  ['📁 Faire de Grimoire un dossier autonome ?','📁 Make Grimoire a standalone folder?'],['Choisissez le dossier où se trouve ce fichier Grimoire.html : l\'app y lira et y sauvegardera vos personnages toute seule, à chaque ouverture.','Choose the folder containing this Grimoire.html file: the app will read and save your characters there automatically each time it opens.'],
+  ['Combat','Combat'],['PV max','Max HP'],['PV actuels','Current HP'],['PV temp.','Temp. HP'],['Vitesse','Speed'],['Bonus maîtrise','Proficiency bonus'],['Montant','Amount'],['Dégâts','Damage'],['Soin','Heal'],['Les dégâts consomment d’abord les PV temporaires.','Damage is applied to temporary HP first.'],['Jets de sauvegarde contre la mort :','Death saving throws:'],['Réussites','Successes'],['Échecs','Failures'],['Réinitialiser','Reset'],
+  ['Ressources','Resources'],['☀️ Repos court','☀️ Short rest'],['🌙 Repos long','🌙 Long rest'],['+ nouvelle ressource','+ new resource'],['Corruption','Corruption'],['La corruption temporaire se réinitialise via le Repos long (section Ressources ci-dessus).','Temporary corruption resets via Long rest (see Resources above).'],['Temporaire','Temporary'],['Permanente','Permanent'],['Actuelle','Current'],['Seuil','Threshold'],
+  ['Caractéristiques','Abilities'],['clic = jet · Maj = avantage · Alt = désavantage','click = roll · Shift = advantage · Alt = disadvantage'],['Score','Score'],['Jet de sauvegarde','Saving throw'],
+  ['Armes','Weapons'],['+ ajouter une arme','+ add weapon'],['Nom','Name'],['Au toucher','To hit'],['+ Dégâts','+ Damage'],['Jet','Roll'],['Équipement','Equipment'],['Une chose par ligne...','One item per line...'],['Autres maîtrises','Other proficiencies'],['Armures, armes, outils, langues, jets de sauvegarde, compétences...','Armor, weapons, tools, languages, saving throws, skills...'],
+  ['🔮 Incantation','🔮 Spellcasting'],['Ce personnage lance des sorts','This character casts spells'],['Caractéristique','Ability'],['DD de sauvegarde','Save DC'],['Attaque de sort','Spell attack'],['Seuil corruption (calc.)','Corruption threshold (calc.)'],['↳ Appliquer ce seuil à la Corruption','↳ Apply this threshold to Corruption'],['Cochez la case ci-dessus pour afficher les statistiques d’incantation et la liste de sorts.','Check the box above to display spellcasting stats and the spell list.'],
+  ['Sorts','Spells'],['+ nouveau sort','+ new spell'],['Aucun sort. Cliquez sur « + nouveau sort ».','No spells. Click « + new spell ».'],['Nom du sort','Spell name'],['Niveau','Level'],["Temps d'incantation",'Casting time'],['Portée','Range'],['Durée','Duration'],['Coût (Corruption)','Cost (Corruption)'],['Description, effets, mise à l’échelle par niveau...','Description, effects, scaling by level...'],
+  ['Capacités','Features'],['+ nouvelle capacité','+ new feature'],['Aucune capacité. Cliquez sur « + nouvelle capacité ».','No features. Click « + new feature ».'],['Nom de la capacité','Feature name'],['Catégorie','Category'],['Description...','Description...'],['Notes','Notes'],['Tout ce qui ne rentre pas ailleurs...','Anything that does not fit elsewhere...'],
+  ['Jets récents','Recent rolls'],['Effacer','Clear'],['Réglez un maximum ci-dessous pour afficher les jetons.','Set a maximum below to display the tokens.'],['Max','Max'],['Utiliser','Use'],['Récupérer','Recover'],['Lancer la formule','Roll formula'],['Aucune arme. Cliquez sur « + ajouter une arme ».','No weapons. Click « + add weapon ».'],['Aucune ressource à utilisations limitées. Cliquez sur « + nouvelle ressource » (ex. Réaction défensive, Rage, Ki...).','No limited-use resources. Click « + new resource » (e.g. Defensive reaction, Rage, Ki...).'],
+  ['Nom (ex. Réaction défensive)','Name (e.g. Defensive reaction)'],['Recharge (ex. Repos long)','Recharge (e.g. Long rest)'],['Formule (ex. 2d4 + 2)','Formula (e.g. 2d4 + 2)'],['Dégâts (ex. 1d4) — laisser vide si aucun','Damage (e.g. 1d4) — leave blank if none'],
+  ['Force','Strength'],['Dextérité','Dexterity'],['Constitution','Constitution'],['Intelligence','Intelligence'],['Sagesse','Wisdom'],['Charisme','Charisma'],['Athlétisme','Athletics'],['Acrobaties','Acrobatics'],['Escamotage','Sleight of Hand'],['Discrétion','Stealth'],['Arcanes','Arcana'],['Histoire','History'],['Investigation','Investigation'],['Nature','Nature'],['Religion','Religion'],['Dressage','Animal Handling'],['Perspicacité','Insight'],['Médecine','Medicine'],['Perception','Perception'],['Survie','Survival'],['Tromperie','Deception'],['Intimidation','Intimidation'],['Représentation','Performance'],['Persuasion','Persuasion'],
+  ['Score','Score'],['Classe','Class'],['Sous-classe','Subclass'],['Espèce','Species'],['Historique','Background'],['Don','Feat'],['Équipement magique','Magic item'],['Autre','Other'],
+  ['Inspiration','Inspiration'],['Réinitialise les ressources en \'Repos court\'','Resets resources on \'Short rest\''],['Réinitialise la corruption temporaire et les ressources en \'Repos long\'','Resets temporary corruption and resources on \'Long rest\'']
+];
+
+function translatePage(){
+  const toEnglish = currentLanguage === 'en';
+  const pairs = new Map(toEnglish ? UI_TEXT_PAIRS : UI_TEXT_PAIRS.map(([fr,en]) => [en,fr]));
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+  const nodes = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode);
+  nodes.forEach(node => {
+    const parent = node.parentElement;
+    if (!parent || ['SCRIPT','STYLE','TEXTAREA','INPUT'].includes(parent.tagName)) return;
+    const raw = node.nodeValue;
+    const trimmed = raw.trim();
+    if (!trimmed) return;
+    if (pairs.has(trimmed)) node.nodeValue = raw.replace(trimmed, pairs.get(trimmed));
+    else if (toEnglish) {
+      node.nodeValue = raw
+        .replace(/Aucun personnage dans ce dossier\./g,'No characters in this folder.')
+        .replace(/Aucun personnage\./g,'No characters.')
+        .replace(/Cliquez sur « \+ Nouveau »\./g,'Click « + New ».')
+        .replace(/Aucun résultat pour « (.*?) »\./g,'No results for “$1”.')
+        .replace(/Modifié — sauvegarde en cours…/g,'Modified — saving…')
+        .replace(/Enregistré sur disque à/g,'Saved to disk at')
+        .replace(/Enregistré à/g,'Saved at')
+        .replace(/Perception passive/g,'Passive Perception')
+        .replace(/Investigation passive/g,'Passive Investigation')
+        .replace(/Perspicacité passive/g,'Passive Insight')
+        .replace(/ — jet/g,' — check').replace(/ — sauvegarde/g,' — save').replace(/ — attaque/g,' — attack').replace(/ — dégâts/g,' — damage')
+        .replace(/aucune formule de dégâts/g,'no damage formula').replace(/formule invalide/g,'invalid formula');
+    } else {
+      node.nodeValue = raw
+        .replace(/No characters in this folder\./g,'Aucun personnage dans ce dossier.')
+        .replace(/No characters\./g,'Aucun personnage.')
+        .replace(/Click « \+ New »\./g,'Cliquez sur « + Nouveau ».')
+        .replace(/No results for “(.*?)”\./g,'Aucun résultat pour « $1 ».')
+        .replace(/Modified — saving…/g,'Modifié — sauvegarde en cours…')
+        .replace(/Saved to disk at/g,'Enregistré sur disque à')
+        .replace(/Saved at/g,'Enregistré à')
+        .replace(/Passive Perception/g,'Perception passive').replace(/Passive Investigation/g,'Investigation passive').replace(/Passive Insight/g,'Perspicacité passive')
+        .replace(/ — check/g,' — jet').replace(/ — save/g,' — sauvegarde').replace(/ — attack/g,' — attaque').replace(/ — damage/g,' — dégâts')
+        .replace(/no damage formula/g,'aucune formule de dégâts').replace(/invalid formula/g,'formule invalide');
+    }
+  });
+
+  document.querySelectorAll('input[placeholder], textarea[placeholder]').forEach(el => {
+    const frToEn = new Map(UI_TEXT_PAIRS);
+    const enToFr = new Map(UI_TEXT_PAIRS.map(([fr,en]) => [en,fr]));
+    const map = toEnglish ? frToEn : enToFr;
+    if (map.has(el.placeholder)) el.placeholder = map.get(el.placeholder);
+  });
+  document.querySelectorAll('[title]').forEach(el => {
+    const frToEn = new Map(UI_TEXT_PAIRS); const enToFr = new Map(UI_TEXT_PAIRS.map(([fr,en]) => [en,fr]));
+    const map = toEnglish ? frToEn : enToFr;
+    if (map.has(el.title)) el.title = map.get(el.title);
+  });
+  document.querySelectorAll('option').forEach(el => {
+    const frToEn = new Map(UI_TEXT_PAIRS); const enToFr = new Map(UI_TEXT_PAIRS.map(([fr,en]) => [en,fr]));
+    const map = toEnglish ? frToEn : enToFr;
+    if (map.has(el.textContent.trim())) el.textContent = map.get(el.textContent.trim());
+  });
+}
+
+let translationObserver;
+function installTranslationObserver(){
+  if (translationObserver) translationObserver.disconnect();
+  let translating = false;
+  translationObserver = new MutationObserver(() => {
+    if (translating) return;
+    translating = true;
+    // Déconnecter l'observer pendant la traduction évite qu'il se
+    // déclenche lui-même en boucle sur les changements de texte.
+    translationObserver.disconnect();
+    try {
+      translatePage();
+    } finally {
+      translating = false;
+      translationObserver.observe(document.body, { childList:true, subtree:true, characterData:true });
+    }
+  });
+  translationObserver.observe(document.body, { childList:true, subtree:true, characterData:true });
+}
+
+
+/* ---------------------------------------------------------------------
    État
 --------------------------------------------------------------------- */
 const STORAGE_KEY = 'grimoire-characters';
@@ -302,7 +501,7 @@ function defaultCharacter(name){
   }
   return {
     id: uid(),
-    name: name || 'Nouveau personnage',
+    name: name || ui('newCharacter'),
     classLevel: '', background: '', alignment: '',
     hp: { max:10, current:10, temp:0 }, ac:10, speed:30, initiative:0,
     inspiration: false,
@@ -354,7 +553,7 @@ async function tryReconnectFolder(){
 
 async function pickFolder(){
   if (!supportsFolderLink()){
-    alert("Lier un dossier fonctionne dans Chrome ou Edge. Utilisez Importer / Exporter en attendant.");
+    alert(ui('folderUnsupported'));
     return;
   }
   try{
@@ -433,7 +632,7 @@ async function deleteCharFromDisk(ch){
 const AUTOSAVE_DELAY = 800; // ms d'inactivité avant d'écrire sur disque
 
 function nowTime(){
-  return new Date().toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+  return new Date().toLocaleTimeString(currentLanguage === 'fr' ? 'fr-FR' : 'en-CA', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
 }
 function setSaveStatus(text, pending){
   const el = document.getElementById('save-status');
@@ -446,18 +645,18 @@ function saveState(){
   const c = activeChar();
   if (!c) return;
   if (state.mode === 'folder'){
-    setSaveStatus('Modifié — sauvegarde en cours…', true);
+    setSaveStatus(ui('modified'), true);
     clearTimeout(writeTimers[c.id]);
     writeTimers[c.id] = setTimeout(async () => {
       await writeCharToDisk(c);
-      setSaveStatus('Enregistré sur disque à ' + nowTime());
+      setSaveStatus(ui('savedDisk') + ' ' + nowTime());
     }, AUTOSAVE_DELAY);
   } else {
-    setSaveStatus('Modifié — sauvegarde en cours…', true);
+    setSaveStatus(ui('modified'), true);
     clearTimeout(writeTimers[c.id]);
     writeTimers[c.id] = setTimeout(() => {
       persistLocal();
-      setSaveStatus('Enregistré à ' + nowTime());
+      setSaveStatus(ui('saved') + ' ' + nowTime());
     }, AUTOSAVE_DELAY);
   }
 }
@@ -465,7 +664,7 @@ function saveNow(ch){
   clearTimeout(writeTimers[ch.id]);
   if (state.mode === 'folder') writeCharToDisk(ch);
   else persistLocal();
-  if (ch.id === state.activeId) setSaveStatus('Enregistré à ' + nowTime());
+  if (ch.id === state.activeId) setSaveStatus(ui('saved') + ' ' + nowTime());
 }
 function flushPendingSaves(){
   Object.keys(writeTimers).forEach(id => {
@@ -521,7 +720,7 @@ function rollD20(label, bonus, mode){
   const d2 = mode !== 'normal' ? rand20() : null;
   const picked = d2 === null ? d1 : (mode === 'adv' ? Math.max(d1,d2) : Math.min(d1,d2));
   const total = picked + bonus;
-  const modeTxt = mode === 'adv' ? ' (avantage)' : mode === 'dis' ? ' (désavantage)' : '';
+  const modeTxt = mode === 'adv' ? ` (${currentLanguage === 'fr' ? 'avantage' : 'advantage'})` : mode === 'dis' ? ` (${currentLanguage === 'fr' ? 'désavantage' : 'disadvantage'})` : '';
   const detail = d2 === null ? `d20(${d1}) ${fmt(bonus)}` : `d20(${d1}, ${d2} → ${picked}) ${fmt(bonus)}`;
   addRollEntry(label + modeTxt, detail, total, picked === 20 ? 'crit' : picked === 1 ? 'fumble' : '');
 }
@@ -1006,30 +1205,30 @@ function handleRoll(btn, e){
   const mode = e.shiftKey ? 'adv' : (e.altKey || e.ctrlKey || e.metaKey) ? 'dis' : 'normal';
   if (type === 'ability'){
     const key = btn.dataset.ability;
-    rollD20(`${ABILITY_LABELS[key]} — jet`, mod(c.abilities[key].score), mode);
+    rollD20(`${tAbility(key)} — ${currentLanguage === 'fr' ? 'jet' : 'check'}`, mod(c.abilities[key].score), mode);
   } else if (type === 'save'){
     const key = btn.dataset.ability, a = c.abilities[key];
-    rollD20(`${ABILITY_LABELS[key]} — sauvegarde`, mod(a.score) + (a.save ? c.proficiencyBonus : 0), mode);
+    rollD20(`${tAbility(key)} — ${currentLanguage === 'fr' ? 'sauvegarde' : 'save'}`, mod(a.score) + (a.save ? c.proficiencyBonus : 0), mode);
   } else if (type === 'skill'){
     const key = btn.dataset.ability, skill = btn.dataset.skill, a = c.abilities[key];
     const bonus = mod(a.score) + (a.skills[skill] ? c.proficiencyBonus : 0);
     rollD20(btn.dataset.label, bonus, mode);
   } else if (type === 'attack'){
     const w = c.weapons[Number(btn.dataset.index)];
-    rollD20(`${w.name || 'Arme'} — attaque`, parseInt(w.toHit) || 0, mode);
+    rollD20(`${w.name || (currentLanguage === 'fr' ? 'Arme' : 'Weapon')} — ${currentLanguage === 'fr' ? 'attaque' : 'attack'}`, parseInt(w.toHit) || 0, mode);
   } else if (type === 'damage'){
     const w = c.weapons[Number(btn.dataset.index)];
     const formula = [w.damage, w.damageBonus].filter(Boolean).join('+').replace(/\+\+/g,'+').replace(/\+-/g,'-');
-    rollDamage(`${w.name || 'Arme'} — dégâts`, formula);
+    rollDamage(`${w.name || (currentLanguage === 'fr' ? 'Arme' : 'Weapon')} — ${currentLanguage === 'fr' ? 'dégâts' : 'damage'}`, formula);
   } else if (type === 'spell-attack'){
     const sp = c.spells[Number(btn.dataset.index)];
-    rollD20(`${sp.title || 'Sort'} — attaque`, spellStats(c).atk, mode);
+    rollD20(`${sp.title || (currentLanguage === 'fr' ? 'Sort' : 'Spell')} — ${currentLanguage === 'fr' ? 'attaque' : 'attack'}`, spellStats(c).atk, mode);
   } else if (type === 'spell-damage'){
     const sp = c.spells[Number(btn.dataset.index)];
-    rollDamage(`${sp.title || 'Sort'} — dégâts`, sp.damage);
+    rollDamage(`${sp.title || (currentLanguage === 'fr' ? 'Sort' : 'Spell')} — ${currentLanguage === 'fr' ? 'dégâts' : 'damage'}`, sp.damage);
   } else if (type === 'resource'){
     const r = c.resources[Number(btn.dataset.index)];
-    rollDamage(`${r.name || 'Ressource'}`, r.formula);
+    rollDamage(`${r.name || (currentLanguage === 'fr' ? 'Ressource' : 'Resource')}`, r.formula);
   }
 }
 
@@ -1100,7 +1299,7 @@ document.body.addEventListener('click', e => {
     renderAll();
   }
   else if (action === 'delete-char' && c){
-    if (!confirm(`Supprimer « ${c.name} » ? Cette action est irréversible.`)) return;
+    if (!confirm(ui('deleteConfirm', c.name))) return;
     if (state.mode === 'folder') deleteCharFromDisk(c);
     state.characters = state.characters.filter(x => x.id !== c.id);
     state.activeId = state.characters[0] ? state.characters[0].id : null;
@@ -1207,7 +1406,7 @@ document.body.addEventListener('change', e => {
       if (state.mode === 'local') persistLocal();
       renderAll();
     }catch(err){
-      alert("Impossible de lire ce fichier : ce n'est pas un JSON valide de Grimoire.");
+      alert(ui('invalidJson'));
     }
     e.target.value = '';
   };
@@ -1227,11 +1426,17 @@ function downloadJSON(obj, filename){
    Démarrage
 --------------------------------------------------------------------- */
 document.getElementById('char-search').addEventListener('input', renderSidebar);
+document.getElementById('lang-toggle').addEventListener('click', toggleLanguage);
+document.documentElement.lang = currentLanguage;
+installTranslationObserver();
+updateLanguageButton();
 
 (async function init(){
   loadLocal();
   await tryReconnectFolder();
   renderAll();
+  updateLanguageButton();
+  translatePage();
 })();
 </script>
 </body>
