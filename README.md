@@ -1,6 +1,6 @@
 # Grimoire
 
-A simple, local character sheet manager for **Ruins of Symbaroum**.
+A simple, local character sheet manager for **Ruins of Symbaroum**. Preview : https://tabtadev.github.io/Grimoire/Grimoire.html 
 
 ![](demo.png)
 
