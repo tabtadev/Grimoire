@@ -13,6 +13,12 @@
   "speed": 30,
   "initiative": 2,
   "inspiration": false,
+  "avatarEmoji": "🎭",
+  "passive": {
+    "perception": null,
+    "investigation": null,
+    "insight": null
+  },
   "deathSaves": {
     "success": 0,
     "failure": 0

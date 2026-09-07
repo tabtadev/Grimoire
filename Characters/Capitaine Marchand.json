@@ -6,11 +6,23 @@
   "alignment": "",
   "hp": {
     "max": 10,
-    "current": 10
+    "current": 10,
+    "temp": 0
   },
   "ac": 16,
   "speed": 30,
   "initiative": 0,
+  "inspiration": false,
+  "avatarEmoji": "👑",
+  "passive": {
+    "perception": null,
+    "investigation": null,
+    "insight": null
+  },
+  "deathSaves": {
+    "success": 0,
+    "failure": 0
+  },
   "corruption": {
     "temp": 0,
     "perm": 0,
