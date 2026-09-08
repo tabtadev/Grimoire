@@ -247,6 +247,9 @@
   .avatar-picker summary{ list-style:none; cursor:pointer; }
   .avatar-picker summary::-webkit-details-marker{ display:none; }
   .avatar-picker .emoji-grid{ top:110%; left:0; right:auto; }
+  .sheet-actions .avatar-picker{ position:relative; flex:none; }
+  .sheet-actions .avatar-picker summary.avatar-edit-btn{ width:34px; height:34px; box-sizing:border-box; border:1px solid var(--border); border-radius:4px; background:var(--surface-2); display:flex; align-items:center; justify-content:center; font-size:15px; line-height:1; color:var(--text); }
+  .sheet-actions .avatar-picker summary.avatar-edit-btn:hover, .sheet-actions .avatar-picker[open] summary.avatar-edit-btn{ border-color:var(--brass); color:var(--brass); }
   .avatar-opt{ background:none; border:none; padding:5px; font-size:17px; border-radius:4px; }
   .avatar-opt:hover{ background:var(--bg); }
   .avatar-none{ font-size:11px; color:var(--text-muted); padding:5px; }
@@ -986,8 +989,8 @@ function renderMain(){
       <div class="sheet-header">
         <input class="name-input" data-path="name" value="${esc(c.name)}" placeholder="Nom du personnage">
         <div class="sheet-actions">
-          <details class="avatar-picker"><summary class="char-avatar" style="background:${avatarColor(c.name)};" title="${esc(ui('avatarChoose'))}">${c.avatarEmoji ? esc(c.avatarEmoji) : esc((c.name || '?').trim().charAt(0).toUpperCase())}</summary><div class="emoji-grid">${EMOJIS.map(em => `<button type="button" class="avatar-opt" data-avatar-emoji="${em}" data-id="${c.id}">${em}</button>`).join('')}<button type="button" class="avatar-opt avatar-none" data-avatar-emoji="" data-id="${c.id}">${esc(ui('avatarNone'))}</button></div></details>
           <button class="inspiration-btn ${c.inspiration ? 'active' : ''}" data-action="toggle-inspiration" title="Inspiration">⭐</button>
+          <details class="avatar-picker"><summary class="avatar-edit-btn" title="${esc(ui('avatarChoose'))}">✎</summary><div class="emoji-grid">${EMOJIS.map(em => `<button type="button" class="avatar-opt" data-avatar-emoji="${em}" data-id="${c.id}">${em}</button>`).join('')}<button type="button" class="avatar-opt avatar-none" data-avatar-emoji="" data-id="${c.id}">${esc(ui('avatarNone'))}</button></div></details>
           <button class="inspiration-btn" data-action="toggle-dice-panel" title="${esc(ui('diceRoller'))}">🎲</button>
           <button data-action="duplicate-char">Dupliquer</button>
           <button data-action="export-char">Exporter</button>
@@ -1031,27 +1034,27 @@ function renderMain(){
         </div>
       </section>
 
-      <section class="block">
-        <h2>Corruption <span style="display:flex;gap:8px;">
-          <button class="add-link" data-action="long-rest" title="${esc(ui('longRestTitle'))}">
-            ${esc(ui('longRest'))}
-          </button>
-        </span></h2>
+	<section class="block">
+	  <h2>Corruption <span style="display:flex;gap:8px;">
+		<button class="add-link" data-action="long-rest" title="${esc(ui('longRestTitle'))}">
+		  ${esc(ui('longRest'))}
+		</button>
+	  </span></h2>
 
-        <div class="hint" style="margin:-8px 0 12px;">
-          ${esc(ui('corruptionHint'))}
-        </div>
+	  <div class="hint" style="margin:-8px 0 12px;">
+		${esc(ui('corruptionHint'))}
+	  </div>
 
-        <div id="corruption-container"></div>
-      </section>
+	  <div id="corruption-container"></div>
+	</section>
 
-      <section class="block">
-        <h2>Ressources <span style="display:flex;gap:8px;">
-          <button class="add-link" data-action="add-resource">+ nouvelle ressource</button>
-        </span></h2>
+	<section class="block">
+	  <h2>Ressources <span style="display:flex;gap:8px;">
+		<button class="add-link" data-action="add-resource">+ nouvelle ressource</button>
+	  </span></h2>
 
-        <div id="resources-container"></div>
-      </section>
+	  <div id="resources-container"></div>
+	</section>
 
       <section class="block">
         <h2>Caractéristiques <span class="hint">clic = jet · Maj = avantage · Alt = désavantage</span></h2>
